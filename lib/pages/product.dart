@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:input_quantity/input_quantity.dart';
 
 import '../components/header_type1.dart';
 import '../components/page_subtitle.dart';

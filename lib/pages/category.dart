@@ -15,6 +15,7 @@ import 'product.dart';
 class CategoryPage extends StatelessWidget {
   // final String title;
   int categoryId;
+  int currentP = 1;
 
   CategoryPage({
     Key? key,
@@ -202,8 +203,18 @@ class CategoryPage extends StatelessWidget {
                           options: QueryOptions(
                             document: gql(
                               '''{
-                                products(filter: {category_id: {eq: "$categoryId"}}) {
+                                products(
+                                  pageSize: 12,
+                                  currentPage: "$currentP"
+                                  filter: {
+                                    category_id: {eq: "$categoryId"}
+                                  }
+                                ) {
                                   total_count
+                                  page_info {
+                                    current_page
+                                    page_size
+                                  }
                                   items {
                                     name
                                     url_key
@@ -243,20 +254,64 @@ class CategoryPage extends StatelessWidget {
                               );
                             }
                             List pritems = result.data!['products']['items'];
-                            return AlignedGridView.count(
-                            physics: NeverScrollableScrollPhysics(),
-                            itemCount: pritems.length,
-                            shrinkWrap: true,
-                            mainAxisSpacing: 10.0,
-                            crossAxisSpacing: 10.0,
-                            crossAxisCount: 2,
-                              itemBuilder: (context, index) {
-                                final pritem = pritems[index];
-                                return productBox(
-                                  context,
-                                  pritem
-                                );
-                              },
+                            int count = result.data!['products']['total_count'];
+                            int pageSize = result.data!['products']['page_info']['page_size'];
+                            int currentPage = result.data!['products']['page_info']['current_page'];
+                            int countpage = (count/pageSize).ceil();
+                            print(countpage);
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(bottom: 10),
+                                  child: Text(
+                                    (count == 0)? "Can't find product" : "${count.toString()} items"
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: List<Widget>.generate(countpage, (int i){
+                                    var pager = i+1;
+                                    return InkWell(
+                                      onTap: () {
+                                        currentP = pager;
+                                        // print(pager);
+                                        print(currentP);
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: (currentP == pager)? colorTheme : colorGreyBg,
+                                          borderRadius: BorderRadius.circular(4)
+                                        ),
+                                        margin: EdgeInsets.symmetric(horizontal: 3),
+                                        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                                        child: Text(
+                                          '${pager}',
+                                          style: TextStyle(
+                                            color: (currentPage == pager)? colorWhite : colorBlack
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                                ),
+                                // Text('${pageSize.toString()}'),
+                                AlignedGridView.count(
+                                physics: NeverScrollableScrollPhysics(),
+                                itemCount: pritems.length,
+                                shrinkWrap: true,
+                                mainAxisSpacing: 10.0,
+                                crossAxisSpacing: 10.0,
+                                crossAxisCount: 2,
+                                  itemBuilder: (context, index) {
+                                    final pritem = pritems[index];
+                                    return productBox(
+                                      context,
+                                      pritem
+                                    );
+                                  },
+                                ),
+                              ],
                             );
                           },
                         ),
