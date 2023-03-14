@@ -168,8 +168,7 @@ class ProductPage extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    // productMedia(context, item),
-                                    // ProductMedia(item: item),
+                                    ProductMedia(item: item),
                                     productInfo(context, item),
                                     loadSpecificTypesOption(context, item),
                                     Container(
@@ -432,12 +431,21 @@ class FormActions extends StatefulWidget {
 class _FormActionsState extends State<FormActions> {
   int value = 1;
   // final myController = TextEditingController();
+   @override
+  void initState() {
+    super.initState();
+    final String _value = value.toString();
+  }
 
   void toggleIncrease() {
-    value++;
+    setState(() {
+      value++;
+    });
   }
   void toggleDecrease() {
-    value--;
+    (value == 1)? 1 : setState(() {
+      value--;
+    });
   }
   @override
   Widget build(BuildContext context) {
@@ -446,7 +454,10 @@ class _FormActionsState extends State<FormActions> {
         Flexible(
           flex: 2,
           child: InkWell(
-            onTap: () {},
+            onTap: () {
+              toggleDecrease();
+              print(value);
+            },
             child: Container(
               width: 30,
               height: 30,
@@ -467,6 +478,7 @@ class _FormActionsState extends State<FormActions> {
             height: 30,
             child: TextFormField(
               // controller: myController,
+              key: Key('${value}'),
               initialValue: '${value}',
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
@@ -479,13 +491,16 @@ class _FormActionsState extends State<FormActions> {
         Flexible(
           flex: 2,
           child: InkWell(
-            onTap: () {},
+            onTap: () {
+              toggleIncrease();
+              print(value);
+            },
             child: Container(
               width: 30,
               height: 30,
               decoration: BoxDecoration(
-                color: colorTheme,
-                borderRadius: BorderRadiusDirectional.circular(4)
+                borderRadius: BorderRadiusDirectional.circular(4),
+                color: colorGreyBg,
               ),
               child: Icon(
                 FontAwesomeIcons.plus,
