@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import '../../theme.dart';
 
-
-
-class FilterProduct extends StatefulWidget {
+class FilterProduct extends StatelessWidget {
   int id;
 
   FilterProduct({
@@ -15,24 +13,14 @@ class FilterProduct extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<FilterProduct> createState() => _FilterProductState();
-}
-
-class _FilterProductState extends State<FilterProduct> {
-  int? color = null;
-  int? climate = null;
-  List valAtt = ["color", "climate"];
-
-  @override
   Widget build(BuildContext context) {
     return Query(
       options: QueryOptions(
         document: gql(
           '''{
             products(filter: { 
-              category_id: { eq: "${widget.id}" },
-              color: {eq: $color},
-              climate: {eq: $climate}
+              category_id: { eq: "$id" },
+              
             }) {
               aggregations{
                 attribute_code
@@ -68,7 +56,6 @@ class _FilterProductState extends State<FilterProduct> {
               itemBuilder: (context, index){
                 final item = filters[index];
                 List options = item['options'];
-                dynamic attrCode = item['attribute_code'];
                 return Column(
                   children: [
                     Container(
@@ -81,7 +68,7 @@ class _FilterProductState extends State<FilterProduct> {
                       child: Column(
                         children: [
                           Text(
-                              '${attrCode}',
+                              '${item['attribute_code']}',
                             ),
                           Theme(
                             data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
@@ -102,51 +89,25 @@ class _FilterProductState extends State<FilterProduct> {
                                   Align(
                                     alignment: Alignment.topLeft, 
                                     child: Wrap(
-                                      children: options.map((option) => InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                              // valclimate = int.parse(option['value']);
-                                              attrCode = int.parse(option['value']);
-                                              print(attrCode);
-                                            });
-                                        },
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                                          margin: EdgeInsets.only(right: 10, bottom: 10),
-                                          decoration: BoxDecoration(
-                                            border: Border.all(color: colorGreyBorder),
-                                            borderRadius: BorderRadius.circular(4)
-                                          ),
-                                          child: Column(
-                                            children: [
-                                              Text('${option['label']}'),
-                                              (attrCode == "price")? 
-                                              // ListView.builder(
-                                              //   shrinkWrap: true,
-                                              //   physics: NeverScrollableScrollPhysics(),
-                                              //   itemBuilder: (context, index){
-                                              //     String textPrice = option['value'];
-                                              //     List<String> listPrice = textPrice.split("_");
-                                              //     print(listPrice);
-                                              //     // final itemPrice = listPrice[index];
-                                              //     return Column(
-                                              //       children: [
-                                      
-                                              //       ],
-                                              //     );
-                                              //   },
-                                              // )
-                                              Text('price')
-                                              : Text('${option['value']}'),
-                                              Text(
-                                                '(${option['count']})',
-                                                style: TextStyle(
-                                                  color: colorGrey1,
-                                                  fontSize: 11
-                                                ),
+                                      children: options.map((option) => Container(
+                                        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                                        margin: EdgeInsets.only(right: 10, bottom: 10),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(color: colorGreyBorder),
+                                          borderRadius: BorderRadius.circular(4)
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            Text('${option['label']}'),
+                                            Text('${option['value']}'),
+                                            Text(
+                                              '(${option['count']})',
+                                              style: TextStyle(
+                                                color: colorGrey1,
+                                                fontSize: 11
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
                                       )).toList()
                                     ),

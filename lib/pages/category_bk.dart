@@ -13,20 +13,17 @@ import 'category/pager.dart';
 import 'category/sort.dart';
 import 'product.dart';
 
-class CategoryPage extends StatefulWidget {
+class CategoryPage extends StatelessWidget {
+  // final String title;
   int categoryId;
+  int currentP = 1;
+
   CategoryPage({
     Key? key,
     // required this.title,
     required this.categoryId,
   }) : super(key: key);
 
-  @override
-  State<CategoryPage> createState() => _CategoryPageState();
-}
-
-class _CategoryPageState extends State<CategoryPage> {
-  int currentP = 1;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,12 +37,11 @@ class _CategoryPageState extends State<CategoryPage> {
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   child: Column(
                     children: [
-                      FilterProduct(id: widget.categoryId),
                       Query(
                         options: QueryOptions(
                           document: gql(
                             '''{
-                              categoryList(filters: {ids: {in: "${widget.categoryId}"}}) {
+                              categoryList(filters: {ids: {in: "$categoryId"}}) {
                                 name
                                 children {
                                   id
@@ -144,7 +140,7 @@ class _CategoryPageState extends State<CategoryPage> {
                                             height: context.h * 0.8,
                                             width: context.w,
                                             padding: EdgeInsets.only(top: 20),
-                                            child: FilterProduct(id: widget.categoryId),
+                                            child: FilterProduct(id: categoryId),
                                           ),
                                         ],
                                       )
@@ -183,7 +179,7 @@ class _CategoryPageState extends State<CategoryPage> {
                                           Container(
                                             height: context.h * 0.8,
                                             width: context.w,
-                                            child: SortBy(id: widget.categoryId),
+                                            child: SortBy(id: categoryId),
                                           ),
                                         ],
                                       )
@@ -210,9 +206,9 @@ class _CategoryPageState extends State<CategoryPage> {
                               '''{
                                 products(
                                   pageSize: 12,
-                                  currentPage: $currentP
+                                  currentPage: "$currentP"
                                   filter: {
-                                    category_id: {eq: "${widget.categoryId}"}
+                                    category_id: {eq: "$categoryId"}
                                   }
                                 ) {
                                   total_count
@@ -258,24 +254,14 @@ class _CategoryPageState extends State<CategoryPage> {
                                 child: CircularProgressIndicator(),
                               );
                             }
-
                             dynamic parent = result.data!['products'];
                             List pritems = result.data!['products']['items'];
-                            int count = parent['total_count'];
-                            int pageSize = parent['page_info']['page_size'];
-                            int currentPage = parent['page_info']['current_page'];
-                            int countpage = (count / pageSize).ceil();
                             
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Container(
-                                  margin: EdgeInsets.only(bottom: 10),
-                                  child: Text(
-                                    (count == 0)? "Can't find product" : "${count.toString()} items"
-                                  ),
-                                ),
-                                
+                                Pager(item: parent,),
+                                // Text('${pageSize.toString()}'),
                                 AlignedGridView.count(
                                 physics: NeverScrollableScrollPhysics(),
                                 itemCount: pritems.length,
@@ -290,37 +276,6 @@ class _CategoryPageState extends State<CategoryPage> {
                                       pritem
                                     );
                                   },
-                                ),
-
-                                Container(
-                                  margin: EdgeInsets.only(top: 20),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: List<Widget>.generate(countpage!, (int i){
-                                      var pager = i+1;
-                                      return InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            currentP = pager;
-                                          });
-                                        },
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: (currentP == pager)? colorTheme : colorGreyBg,
-                                            borderRadius: BorderRadius.circular(4)
-                                          ),
-                                          margin: EdgeInsets.symmetric(horizontal: 3),
-                                          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                                          child: Text(
-                                            '${pager}',
-                                            style: TextStyle(
-                                              color: (currentP == pager)? colorWhite : colorBlack
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    }),
-                                  ),
                                 ),
                               ],
                             );
