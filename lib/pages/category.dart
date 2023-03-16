@@ -8,7 +8,7 @@ import '../components/modal_title.dart';
 import '../components/product_item.dart';
 import '../theme.dart';
 import '../utils.dart';
-import 'category/filter.dart';
+// import 'category/filter.dart';
 import 'category/pager.dart';
 import 'category/sort.dart';
 import 'product.dart';
@@ -27,6 +27,20 @@ class CategoryPage extends StatefulWidget {
 
 class _CategoryPageState extends State<CategoryPage> {
   int currentP = 1;
+  bool _removeFilter = true;
+  bool _activeBox = false;
+  int? color = null;
+  int? size = null;
+  int? fromPrice = null;
+  int? toPrice = null;
+  void removeFilter(){
+    setState(() {
+      color = null;
+      size = null;
+      fromPrice = null;
+      toPrice = null;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,7 +54,6 @@ class _CategoryPageState extends State<CategoryPage> {
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   child: Column(
                     children: [
-                      FilterProduct(id: widget.categoryId),
                       Query(
                         options: QueryOptions(
                           document: gql(
@@ -144,7 +157,7 @@ class _CategoryPageState extends State<CategoryPage> {
                                             height: context.h * 0.8,
                                             width: context.w,
                                             padding: EdgeInsets.only(top: 20),
-                                            child: FilterProduct(id: widget.categoryId),
+                                            // child: FilterProduct(id: widget.categoryId),
                                           ),
                                         ],
                                       )
@@ -212,10 +225,22 @@ class _CategoryPageState extends State<CategoryPage> {
                                   pageSize: 12,
                                   currentPage: $currentP
                                   filter: {
-                                    category_id: {eq: "${widget.categoryId}"}
+                                    category_id: {eq: "${widget.categoryId}"},
+                                    color: {eq: $color},
+                                    size: {eq: $size},
+                                    price: {from: $fromPrice, to: $toPrice}
                                   }
                                 ) {
                                   total_count
+                                  aggregations{
+                                    attribute_code
+                                    label
+                                    options{
+                                      count
+                                      label
+                                      value
+                                    }
+                                  }
                                   page_info {
                                     current_page
                                     page_size
@@ -265,10 +290,121 @@ class _CategoryPageState extends State<CategoryPage> {
                             int pageSize = parent['page_info']['page_size'];
                             int currentPage = parent['page_info']['current_page'];
                             int countpage = (count / pageSize).ceil();
+                            List filters = parent['aggregations'];
+                            
                             
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: filters.length,
+                                  itemBuilder: (context, index){
+                                    final item = filters[index];
+                                    List options = item['options'];
+                                    dynamic attrCode = item['attribute_code'];
+                                    return Column(
+                                      children: [
+                                        Container(
+                                          padding: EdgeInsets.only(left: 20, right: 20, bottom: 10),
+                                          decoration: BoxDecoration(
+                                            border: Border(
+                                              bottom: BorderSide(color: colorGreyBorder)
+                                            ),
+                                          ),
+                                          child: Theme(
+                                            data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                                            child: ExpansionTileTheme(
+                                              data: ExpansionTileThemeData(
+                                                iconColor: colorBlack,
+                                                collapsedIconColor: colorGrey1,
+                                                collapsedTextColor: colorGrey1,
+                                                textColor: colorBlack,
+                                              ),
+                                              child: ExpansionTile(
+                                                tilePadding: EdgeInsets.zero,
+                                                initiallyExpanded : true,
+                                                title: Text(
+                                                  '${item['label']}',
+                                                ),
+                                                children: <Widget>[
+                                                  Align(
+                                                    alignment: Alignment.topLeft, 
+                                                    child: Wrap(
+                                                      children: options.map((option) => InkWell(
+                                                        onTap: () {
+                                                          if(attrCode == 'color'){
+                                                            setState(() {
+                                                              color = int.parse(option['value']);
+                                                            });
+                                                          }        
+                                                          else if(attrCode == 'size'){
+                                                            setState(() {
+                                                              size = int.parse(option['value']);
+                                                            });
+                                                          }        
+                                                          else if(attrCode == 'category_uid'){
+                                                            setState(() {
+                                                              widget.categoryId = int.parse(option['value']);
+                                                            });
+                                                          }        
+                                                          else if(attrCode == 'price'){
+                                                            String textPrice = option['value'];
+                                                             List<String> listPrice = textPrice.split("_");
+                                                             
+                                                            setState(() {
+                                                              fromPrice = int.parse(listPrice[0]);
+                                                              toPrice = int.parse(listPrice[1]);
+                                                            });
+                                                          }        
+                                                        },
+                                                        child: Container(
+                                                          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                                                          margin: EdgeInsets.only(right: 10, bottom: 10),
+                                                          decoration: BoxDecoration(
+                                                            border: Border.all(color: colorGreyBorder),
+                                                            borderRadius: BorderRadius.circular(4),
+                                                            color: (_activeBox == true)? colorTheme : colorWhite
+                                                          ),
+                                                          child: Wrap(
+                                                            runAlignment: WrapAlignment.center,
+                                                            spacing: 5,
+                                                            children: [
+                                                              Text(
+                                                                '${option['label']}',
+                                                                style: TextStyle(
+                                                                  color: (_activeBox == true)? colorWhite : colorBlack
+                                                                ),
+                                                              ),
+                                                              Text(
+                                                                '(${option['count']})',
+                                                                style: TextStyle(
+                                                                  color: (_activeBox == true)? colorWhite : colorGrey1,
+                                                                  fontSize: 11,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      )).toList()
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                                ElevatedButton(
+                                  onPressed: (){
+                                    removeFilter();
+                                  }, 
+                                  child: Text('Reset Filter')
+                                ),
                                 Container(
                                   margin: EdgeInsets.only(bottom: 10),
                                   child: Text(

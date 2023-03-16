@@ -19,10 +19,10 @@ class FilterProduct extends StatefulWidget {
 }
 
 class _FilterProductState extends State<FilterProduct> {
-  int? color = null;
-  int? climate = null;
-  List valAtt = ["color", "climate"];
-
+  dynamic color = null;
+  dynamic climate = null;
+  // List<dynamic> listAtt = [$color];
+  
   @override
   Widget build(BuildContext context) {
     return Query(
@@ -167,4 +167,9 @@ class _FilterProductState extends State<FilterProduct> {
       },
     );
   }
+}
+
+class toInt {
+  toInt(this.someProp);
+  int someProp;
 }
