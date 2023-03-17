@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 import '../components/header_type1.dart';
@@ -33,12 +34,30 @@ class _CategoryPageState extends State<CategoryPage> {
   int? size = null;
   int? fromPrice = null;
   int? toPrice = null;
+  String sortName = "position";
+  String sortField = "ASC";
+
+  List currentAttr = [];
+  List currentLabel = [];
+
+  List listSort = [
+    "Position: hight to low",
+    "Position: low to hight",
+    "Name: A->Z",
+    "Name: Z->A",
+    "Price: low to hight",
+    "Price: hight to low",
+  ];
+  bool selectedSort = false;
+
   void removeFilter(){
     setState(() {
       color = null;
       size = null;
       fromPrice = null;
       toPrice = null;
+      currentAttr = [];
+      currentLabel = [];
     });
   }
   @override
@@ -229,6 +248,9 @@ class _CategoryPageState extends State<CategoryPage> {
                                     color: {eq: $color},
                                     size: {eq: $size},
                                     price: {from: $fromPrice, to: $toPrice}
+                                  },
+                                  sort: {
+                                    $sortName: $sortField
                                   }
                                 ) {
                                   total_count
@@ -291,11 +313,108 @@ class _CategoryPageState extends State<CategoryPage> {
                             int currentPage = parent['page_info']['current_page'];
                             int countpage = (count / pageSize).ceil();
                             List filters = parent['aggregations'];
-                            
-                            
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: listSort.length,
+                                  itemBuilder: (context, i){
+                                    final item = listSort[i];
+                                    return InkWell(
+                                      onTap: () {},
+                                      child: Card(
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                                          child: Text('$item')
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(color: colorGreyBorder)
+                                    ),
+                                  ),
+                                  child: Visibility(
+                                    visible: (currentAttr.isEmpty)? false : true,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          padding: EdgeInsets.only(bottom: 10),
+                                          child: Text(
+                                            'Filter Current',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16
+                                            ),
+                                          )
+                                        ),
+                                        ListView.builder(
+                                          physics: NeverScrollableScrollPhysics(),
+                                          shrinkWrap: true,
+                                          itemCount: currentAttr.length,
+                                          itemBuilder: (context, index){
+                                            var name = currentAttr[index];
+                                            var label = currentLabel[index];
+                                            return Stack(
+                                              children: [
+                                                Container(
+                                                  padding: EdgeInsets.only(top: 0, bottom: 10, left: 25),
+                                                  child: Text("$name: $label")
+                                                ),
+                                                Positioned(
+                                                  top: -1,
+                                                  left: 0,
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      setState(() {
+                                                        currentAttr.removeAt(index);
+                                                        currentLabel.removeAt(index);
+                                                      });
+                                                      if("$name" == "Color"){
+                                                        setState(() {
+                                                          color = null;
+                                                        });
+                                                      } 
+                                                      else if("$name" == "Size"){
+                                                        setState(() {
+                                                          size = null;
+                                                        });
+                                                      } 
+                                                      else if("$name" == "Price"){
+                                                        setState(() {
+                                                          fromPrice = null;
+                                                          toPrice = null;
+                                                        });
+                                                      } 
+                                                    },                                             
+                                                    child: Icon(
+                                                      FontAwesomeIcons.times,
+                                                      size: 18,
+                                                    ),
+                                                  )
+                                                )
+                                              ],
+                                            );
+                                          }
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: (){
+                                            removeFilter();
+                                          }, 
+                                          child: Text('Clear all Filter')
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                
                                 ListView.builder(
                                   shrinkWrap: true,
                                   physics: NeverScrollableScrollPhysics(),
@@ -334,6 +453,12 @@ class _CategoryPageState extends State<CategoryPage> {
                                                     child: Wrap(
                                                       children: options.map((option) => InkWell(
                                                         onTap: () {
+                                                          currentAttr.add(
+                                                            item['label']
+                                                          );
+                                                          currentLabel.add(
+                                                            option['label']
+                                                          );
                                                           if(attrCode == 'color'){
                                                             setState(() {
                                                               color = int.parse(option['value']);
@@ -398,12 +523,6 @@ class _CategoryPageState extends State<CategoryPage> {
                                       ],
                                     );
                                   },
-                                ),
-                                ElevatedButton(
-                                  onPressed: (){
-                                    removeFilter();
-                                  }, 
-                                  child: Text('Reset Filter')
                                 ),
                                 Container(
                                   margin: EdgeInsets.only(bottom: 10),
