@@ -9,9 +9,6 @@ import '../components/modal_title.dart';
 import '../components/product_item.dart';
 import '../theme.dart';
 import '../utils.dart';
-// import 'category/filter.dart';
-import 'category/pager.dart';
-import 'category/sort.dart';
 import 'product.dart';
 
 class CategoryPage extends StatefulWidget {
@@ -40,15 +37,15 @@ class _CategoryPageState extends State<CategoryPage> {
   List currentAttr = [];
   List currentLabel = [];
 
-  List listSort = [
-    "Position: hight to low",
-    "Position: low to hight",
-    "Name: A->Z",
-    "Name: Z->A",
-    "Price: low to hight",
-    "Price: hight to low",
-  ];
-  bool selectedSort = false;
+  // List listSort = [
+  //   "Position: hight to low",
+  //   "Position: low to hight",
+  //   "Name: A->Z",
+  //   "Name: Z->A",
+  //   "Price: low to hight",
+  //   "Price: hight to low",
+  // ];
+  Set<String> listSort_selected = Set();
 
   void removeFilter(){
     setState(() {
@@ -60,6 +57,15 @@ class _CategoryPageState extends State<CategoryPage> {
       currentLabel = [];
     });
   }
+
+  @override
+  initState() {
+    super.initState();
+    setState(() {
+      listSort_selected.add("position");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -148,92 +154,7 @@ class _CategoryPageState extends State<CategoryPage> {
                           );
                         },
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            TextButton(
-                              onPressed: () => showDialog<String>(
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                insetPadding: EdgeInsets.zero,
-                                contentPadding: EdgeInsets.zero,
-                                backgroundColor: Colors.transparent,
-                                content: Column(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Container(
-                                      color: colorWhite,
-                                      padding: EdgeInsets.symmetric(vertical: 20),
-                                      child: Column(
-                                        children: [
-                                          Container(
-                                            padding: EdgeInsets.symmetric(horizontal: 20),
-                                            child: AlertDialogTitle(data: 'Bộ lọc')
-                                          ),
-                                          Container(
-                                            height: context.h * 0.8,
-                                            width: context.w,
-                                            padding: EdgeInsets.only(top: 20),
-                                            // child: FilterProduct(id: widget.categoryId),
-                                          ),
-                                        ],
-                                      )
-                                    ), 
-                                  ],
-                                ),
-                              ),
-                            ),
-                              child: Row(
-                                children: [
-                                  SvgPicture.asset('assets/images/icons/filter.svg'),
-                                  Text('Lọc')
-                                ]
-                              ),
-                            ),
-                      
-                            TextButton(
-                              onPressed: () => showDialog<String>(
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                insetPadding: EdgeInsets.zero,
-                                contentPadding: EdgeInsets.zero,
-                                backgroundColor: Colors.transparent,
-                                content: Column(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Container(
-                                      color: colorWhite,
-                                      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                                      child: Column(
-                                        children: [
-                                          Container(
-                                            padding: EdgeInsets.only(bottom: 20),
-                                            child: AlertDialogTitle(data: 'Sắp xếp theo')
-                                          ),
-                                          Container(
-                                            height: context.h * 0.8,
-                                            width: context.w,
-                                            child: SortBy(id: widget.categoryId),
-                                          ),
-                                        ],
-                                      )
-                                    ), 
-                                  ],
-                                ),
-                              ),
-                            ),
-                              child: Row(
-                                children: [
-                                  SvgPicture.asset('assets/images/icons/sort.svg'),
-                                  Text('Sắp xếp')
-                                ]
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: Query(
@@ -254,6 +175,13 @@ class _CategoryPageState extends State<CategoryPage> {
                                   }
                                 ) {
                                   total_count
+                                  sort_fields {
+                                    default
+                                    options {
+                                      label
+                                      value
+                                    }
+                                  }
                                   aggregations{
                                     attribute_code
                                     label
@@ -313,217 +241,98 @@ class _CategoryPageState extends State<CategoryPage> {
                             int currentPage = parent['page_info']['current_page'];
                             int countpage = (count / pageSize).ceil();
                             List filters = parent['aggregations'];
+                            List listSort = result.data!['products']['sort_fields']['options'];
+
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  itemCount: listSort.length,
-                                  itemBuilder: (context, i){
-                                    final item = listSort[i];
-                                    return InkWell(
-                                      onTap: () {},
-                                      child: Card(
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                                          child: Text('$item')
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    TextButton(
+                                      onPressed: () => showDialog<String>(
+                                      context: context,
+                                      builder: (BuildContext context) => AlertDialog(
+                                        insetPadding: EdgeInsets.zero,
+                                        contentPadding: EdgeInsets.zero,
+                                        backgroundColor: Colors.transparent,
+                                        content: Column(
+                                          mainAxisAlignment: MainAxisAlignment.end,
+                                          children: [
+                                            Container(
+                                              color: colorWhite,
+                                              padding: EdgeInsets.symmetric(vertical: 20),
+                                              child: Column(
+                                                children: [
+                                                  Container(
+                                                    padding: EdgeInsets.symmetric(horizontal: 20),
+                                                    child: AlertDialogTitle(data: 'Bộ lọc')
+                                                  ),
+                                                  Container(
+                                                    height: context.h * 0.8,
+                                                    width: context.w,
+                                                    padding: EdgeInsets.only(top: 20),
+                                                    child: SingleChildScrollView(
+                                                      child: popupFilter(context, filters)
+                                                    ),
+                                                  ),
+                                                ],
+                                              )
+                                            ), 
+                                          ],
                                         ),
                                       ),
-                                    );
-                                  }
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                      bottom: BorderSide(color: colorGreyBorder)
                                     ),
-                                  ),
-                                  child: Visibility(
-                                    visible: (currentAttr.isEmpty)? false : true,
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          padding: EdgeInsets.only(bottom: 10),
-                                          child: Text(
-                                            'Filter Current',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16
-                                            ),
-                                          )
-                                        ),
-                                        ListView.builder(
-                                          physics: NeverScrollableScrollPhysics(),
-                                          shrinkWrap: true,
-                                          itemCount: currentAttr.length,
-                                          itemBuilder: (context, index){
-                                            var name = currentAttr[index];
-                                            var label = currentLabel[index];
-                                            return Stack(
-                                              children: [
-                                                Container(
-                                                  padding: EdgeInsets.only(top: 0, bottom: 10, left: 25),
-                                                  child: Text("$name: $label")
-                                                ),
-                                                Positioned(
-                                                  top: -1,
-                                                  left: 0,
-                                                  child: InkWell(
-                                                    onTap: () {
-                                                      setState(() {
-                                                        currentAttr.removeAt(index);
-                                                        currentLabel.removeAt(index);
-                                                      });
-                                                      if("$name" == "Color"){
-                                                        setState(() {
-                                                          color = null;
-                                                        });
-                                                      } 
-                                                      else if("$name" == "Size"){
-                                                        setState(() {
-                                                          size = null;
-                                                        });
-                                                      } 
-                                                      else if("$name" == "Price"){
-                                                        setState(() {
-                                                          fromPrice = null;
-                                                          toPrice = null;
-                                                        });
-                                                      } 
-                                                    },                                             
-                                                    child: Icon(
-                                                      FontAwesomeIcons.times,
-                                                      size: 18,
-                                                    ),
-                                                  )
-                                                )
-                                              ],
-                                            );
-                                          }
-                                        ),
-                                        ElevatedButton(
-                                          onPressed: (){
-                                            removeFilter();
-                                          }, 
-                                          child: Text('Clear all Filter')
-                                        ),
-                                      ],
+                                      child: Row(
+                                        children: [
+                                          SvgPicture.asset('assets/images/icons/filter.svg'),
+                                          Text('Lọc')
+                                        ]
+                                      ),
                                     ),
-                                  ),
+                              
+                                    TextButton(
+                                      onPressed: () => showDialog<String>(
+                                      context: context,
+                                      builder: (BuildContext context) => AlertDialog(
+                                        insetPadding: EdgeInsets.zero,
+                                        contentPadding: EdgeInsets.zero,
+                                        backgroundColor: Colors.transparent,
+                                        content: Column(
+                                          mainAxisAlignment: MainAxisAlignment.end,
+                                          children: [
+                                            Container(
+                                              color: colorWhite,
+                                              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                                              child: Column(
+                                                children: [
+                                                  Container(
+                                                    padding: EdgeInsets.only(bottom: 20),
+                                                    child: AlertDialogTitle(data: 'Sắp xếp theo')
+                                                  ),
+                                                  Container(
+                                                    height: context.h * 0.8,
+                                                    width: context.w,
+                                                    child: popupSort(context, listSort),
+                                                  ),
+                                                ],
+                                              )
+                                            ), 
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                      child: Row(
+                                        children: [
+                                          SvgPicture.asset('assets/images/icons/sort.svg'),
+                                          Text('Sắp xếp')
+                                        ]
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 
-                                ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  itemCount: filters.length,
-                                  itemBuilder: (context, index){
-                                    final item = filters[index];
-                                    List options = item['options'];
-                                    dynamic attrCode = item['attribute_code'];
-                                    return Column(
-                                      children: [
-                                        Container(
-                                          padding: EdgeInsets.only(left: 20, right: 20, bottom: 10),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                              bottom: BorderSide(color: colorGreyBorder)
-                                            ),
-                                          ),
-                                          child: Theme(
-                                            data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-                                            child: ExpansionTileTheme(
-                                              data: ExpansionTileThemeData(
-                                                iconColor: colorBlack,
-                                                collapsedIconColor: colorGrey1,
-                                                collapsedTextColor: colorGrey1,
-                                                textColor: colorBlack,
-                                              ),
-                                              child: ExpansionTile(
-                                                tilePadding: EdgeInsets.zero,
-                                                initiallyExpanded : true,
-                                                title: Text(
-                                                  '${item['label']}',
-                                                ),
-                                                children: <Widget>[
-                                                  Align(
-                                                    alignment: Alignment.topLeft, 
-                                                    child: Wrap(
-                                                      children: options.map((option) => InkWell(
-                                                        onTap: () {
-                                                          currentAttr.add(
-                                                            item['label']
-                                                          );
-                                                          currentLabel.add(
-                                                            option['label']
-                                                          );
-                                                          if(attrCode == 'color'){
-                                                            setState(() {
-                                                              color = int.parse(option['value']);
-                                                            });
-                                                          }        
-                                                          else if(attrCode == 'size'){
-                                                            setState(() {
-                                                              size = int.parse(option['value']);
-                                                            });
-                                                          }        
-                                                          else if(attrCode == 'category_uid'){
-                                                            setState(() {
-                                                              widget.categoryId = int.parse(option['value']);
-                                                            });
-                                                          }        
-                                                          else if(attrCode == 'price'){
-                                                            String textPrice = option['value'];
-                                                             List<String> listPrice = textPrice.split("_");
-                                                             
-                                                            setState(() {
-                                                              fromPrice = int.parse(listPrice[0]);
-                                                              toPrice = int.parse(listPrice[1]);
-                                                            });
-                                                          }        
-                                                        },
-                                                        child: Container(
-                                                          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                                                          margin: EdgeInsets.only(right: 10, bottom: 10),
-                                                          decoration: BoxDecoration(
-                                                            border: Border.all(color: colorGreyBorder),
-                                                            borderRadius: BorderRadius.circular(4),
-                                                            color: (_activeBox == true)? colorTheme : colorWhite
-                                                          ),
-                                                          child: Wrap(
-                                                            runAlignment: WrapAlignment.center,
-                                                            spacing: 5,
-                                                            children: [
-                                                              Text(
-                                                                '${option['label']}',
-                                                                style: TextStyle(
-                                                                  color: (_activeBox == true)? colorWhite : colorBlack
-                                                                ),
-                                                              ),
-                                                              Text(
-                                                                '(${option['count']})',
-                                                                style: TextStyle(
-                                                                  color: (_activeBox == true)? colorWhite : colorGrey1,
-                                                                  fontSize: 11,
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      )).toList()
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                ),
+                                
                                 Container(
                                   margin: EdgeInsets.only(bottom: 10),
                                   child: Text(
@@ -591,5 +400,236 @@ class _CategoryPageState extends State<CategoryPage> {
         ),
       ),
     );
+  }
+  
+  Widget popupSort(BuildContext context, dynamic sort){
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: sort.length,
+      itemBuilder: (context, i){
+        final item = sort[i];
+        final val = sort[i]['value'];
+        return InkWell(
+          onTap: () {
+            setState(() {
+              listSort_selected = Set();
+              listSort_selected.add(val);
+              sortName = val;
+              // Navigator.pop(context, 'Cancel');
+              Navigator.of(context).pop();
+            });
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: listSort_selected.contains(val) ? colorTheme : colorWhite,
+            ),
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+            child:  Text('${item['label']}'),
+          ),
+        );
+      }
+    );
+  }
+
+  Widget popupFilter(BuildContext context, dynamic filters){
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: colorGreyBorder)
+            ),
+          ),
+          child: Visibility(
+            visible: (currentAttr.isEmpty)? false : true,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: EdgeInsets.only(bottom: 10),
+                  child: Text(
+                    'Filter Current',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16
+                    ),
+                  )
+                ),
+                ListView.builder(
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: currentAttr.length,
+                  itemBuilder: (context, index){
+                    var name = currentAttr[index];
+                    var label = currentLabel[index];
+                    return Stack(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.only(top: 0, bottom: 10, left: 25),
+                          child: Text("$name: $label")
+                        ),
+                        Positioned(
+                          top: -1,
+                          left: 0,
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                currentAttr.removeAt(index);
+                                currentLabel.removeAt(index);
+                                Navigator.of(context).pop();
+                              });
+                              if("$name" == "Color"){
+                                setState(() {
+                                  color = null;
+                                });
+                              } 
+                              else if("$name" == "Size"){
+                                setState(() {
+                                  size = null;
+                                });
+                              } 
+                              else if("$name" == "Price"){
+                                setState(() {
+                                  fromPrice = null;
+                                  toPrice = null;
+                                });
+                              } 
+                            },                                             
+                            child: Icon(
+                              FontAwesomeIcons.times,
+                              size: 18,
+                            ),
+                          )
+                        )
+                      ],
+                    );
+                  }
+                ),
+                ElevatedButton(
+                  onPressed: (){
+                    removeFilter();
+                    Navigator.of(context).pop();
+                  }, 
+                  child: Text('Clear all Filter')
+                ),
+              ],
+            ),
+          ),
+        ),
+        
+        ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: filters.length,
+          itemBuilder: (context, index){
+            final item = filters[index];
+            List options = item['options'];
+            dynamic attrCode = item['attribute_code'];
+            return Column(
+              children: [
+                Container(
+                  padding: EdgeInsets.only(left: 20, right: 20, bottom: 10),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: colorGreyBorder)
+                    ),
+                  ),
+                  child: Theme(
+                    data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                    child: ExpansionTileTheme(
+                      data: ExpansionTileThemeData(
+                        iconColor: colorBlack,
+                        collapsedIconColor: colorGrey1,
+                        collapsedTextColor: colorGrey1,
+                        textColor: colorBlack,
+                      ),
+                      child: ExpansionTile(
+                        tilePadding: EdgeInsets.zero,
+                        initiallyExpanded : true,
+                        title: Text(
+                          '${item['label']}',
+                        ),
+                        children: <Widget>[
+                          Align(
+                            alignment: Alignment.topLeft, 
+                            child: Wrap(
+                              children: options.map((option) => InkWell(
+                                onTap: () {
+                                  Navigator.of(context).pop();
+                                  currentAttr.add(
+                                    item['label']
+                                  );
+                                  currentLabel.add(
+                                    option['label']
+                                  );
+                                  if(attrCode == 'color'){
+                                    setState(() {
+                                      color = int.parse(option['value']);
+                                    });
+                                  }        
+                                  else if(attrCode == 'size'){
+                                    setState(() {
+                                      size = int.parse(option['value']);
+                                    });
+                                  }        
+                                  else if(attrCode == 'category_uid'){
+                                    setState(() {
+                                      widget.categoryId = int.parse(option['value']);
+                                    });
+                                  }        
+                                  else if(attrCode == 'price'){
+                                    String textPrice = option['value'];
+                                      List<String> listPrice = textPrice.split("_");
+                                      
+                                    setState(() {
+                                      fromPrice = int.parse(listPrice[0]);
+                                      toPrice = int.parse(listPrice[1]);
+                                    });
+                                  }        
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                                  margin: EdgeInsets.only(right: 10, bottom: 10),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: colorGreyBorder),
+                                    borderRadius: BorderRadius.circular(4),
+                                    color: (_activeBox == true)? colorTheme : colorWhite
+                                  ),
+                                  child: Wrap(
+                                    runAlignment: WrapAlignment.center,
+                                    spacing: 5,
+                                    children: [
+                                      Text(
+                                        '${option['label']}',
+                                        style: TextStyle(
+                                          color: (_activeBox == true)? colorWhite : colorBlack
+                                        ),
+                                      ),
+                                      Text(
+                                        '(${option['count']})',
+                                        style: TextStyle(
+                                          color: (_activeBox == true)? colorWhite : colorGrey1,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )).toList()
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        )
+      ],
+    );    
   }
 }

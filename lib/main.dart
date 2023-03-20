@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 
 import 'pages/category.dart';
 import 'pages/homepage.dart';
+import 'pages/login.dart';
 import 'pages/product.dart';
 
 void main() => runApp(
@@ -46,7 +47,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
         debugShowCheckedModeBanner: false,
-        home: CategoryPage(categoryId: 21,),
+        home: HomePage(),
       ),
     );
   }

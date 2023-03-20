@@ -15,9 +15,16 @@ class ProductMedia extends StatefulWidget {
 }
 
 class _ProductMediaState extends State<ProductMedia> {
+  String? mainImage;
+
+  @override
+  void initState() {
+    super.initState();
+    mainImage = widget.item['image']['url'];
+  }
+
   @override
   Widget build(BuildContext context) {
-    String mainImage = widget.item['image']['url'];
     var galleryList = widget.item['media_gallery'];
     var gallerySize = galleryList.length;
     return Column(
@@ -27,7 +34,7 @@ class _ProductMediaState extends State<ProductMedia> {
           height: context.h * 0.5,
           child: Align(
             alignment: Alignment.center,
-            child: Image.network(mainImage)
+            child: Image.network('${mainImage}')
           )
         ),
         Visibility(
@@ -42,8 +49,6 @@ class _ProductMediaState extends State<ProductMedia> {
                   onTap: (){
                     setState(() {
                       mainImage = media['url'];
-                      print(media['url']);
-                      print(mainImage);
                     });
                   },
                    child: Container(
