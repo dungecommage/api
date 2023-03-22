@@ -11,9 +11,18 @@ import 'pages/category.dart';
 import 'pages/homepage.dart';
 import 'pages/login.dart';
 import 'pages/product.dart';
+import 'providers/accounts.dart';
+import 'providers/cart.dart';
 
 void main() => runApp(
-  const MyApp(),
+  // MultiProvider(
+  //   providers: [
+  //     ChangeNotifierProvider(create: (_) => AccountsProvider()),
+  //     ChangeNotifierProvider(create: (_) => CartProvider()),
+  //   ],
+  //   child: MyApp(),
+  const MyApp()
+  // ),
 );
 
 class MyApp extends StatelessWidget {

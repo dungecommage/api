@@ -564,6 +564,9 @@ class _CategoryPageState extends State<CategoryPage> {
                                   currentLabel.add(
                                     option['label']
                                   );
+                                  setState(() {
+                                    currentP = 1;
+                                  });
                                   if(attrCode == 'color'){
                                     setState(() {
                                       color = int.parse(option['value']);
