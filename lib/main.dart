@@ -10,29 +10,44 @@ import 'package:provider/provider.dart';
 import 'pages/category.dart';
 import 'pages/homepage.dart';
 import 'pages/login.dart';
+import 'pages/myaccount/acc_dashboard.dart';
 import 'pages/product.dart';
 import 'providers/accounts.dart';
 import 'providers/cart.dart';
 
 void main() => runApp(
-  // MultiProvider(
-  //   providers: [
-  //     ChangeNotifierProvider(create: (_) => AccountsProvider()),
-  //     ChangeNotifierProvider(create: (_) => CartProvider()),
-  //   ],
-  //   child: MyApp(),
-  const MyApp()
-  // ),
+  MyHome()
 );
+
+class MyHome extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AccountsProvider()),
+        ChangeNotifierProvider(create: (_) => CartProvider()),
+      ],
+      child: MyApp(),
+    );
+  }
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
+    Link link;
+    HttpLink httpLink  = HttpLink("https://flutter.ecommage.com/graphql");
 
-    // HttpLink link = HttpLink("https://rickandmortyapi.com/graphql");
-    HttpLink link = HttpLink("https://flutter.ecommage.com/graphql");
+    final provider = context.watch<AccountsProvider>();
+    if (provider.isCustomer) {
+      final authLink = AuthLink(getToken: () => 'Bearer ${provider.token}');
+      link = authLink.concat(httpLink);
+    } else {
+      link = httpLink;
+    }
+
     var qlClient = ValueNotifier<GraphQLClient>(
       GraphQLClient(
         link: link, 
@@ -54,6 +69,14 @@ class MyApp extends StatelessWidget {
               // minimumSize: Size.fromHeight(40),
             )
           ),
+          textButtonTheme: TextButtonThemeData(
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              minimumSize: Size.zero,
+              // foregroundColor: colorBlack
+            )
+          )
         ),
         debugShowCheckedModeBanner: false,
         home: HomePage(),

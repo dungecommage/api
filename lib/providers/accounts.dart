@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountsProvider with ChangeNotifier {
-  String _token;
+  String _token = "";
   String get token => _token;
   bool get isCustomer => _token != null;
 
-  AccountsProvider(this._token) {
+  AccountsProvider(){
     init();
   }
 

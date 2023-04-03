@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../components/header_type1.dart';
 import '../providers/accounts.dart';
 import '../theme.dart';
+import 'myaccount/acc_dashboard.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -50,22 +51,8 @@ class _LoginPageState extends State<LoginPage> {
                           Container(
                             height: 42,
                             margin: EdgeInsets.only(top: 10, bottom: 20),
-                            decoration: BoxDecoration(
-                                color: colorGreyBg,
-                                borderRadius: BorderRadius.circular(11)),
                             child: TextFormField(
                               obscureText: false,
-                              decoration: InputDecoration(
-                                enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        width: 0, color: Colors.transparent)),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      width: 0, color: Colors.transparent),
-                                ),
-                                contentPadding: EdgeInsets.symmetric(
-                                    vertical: 0, horizontal: 20),
-                              ),
                               onChanged: (String? valEmail) {
                                 _formValues['email'] = valEmail!;
                               },
@@ -78,22 +65,8 @@ class _LoginPageState extends State<LoginPage> {
                           Container(
                             height: 42,
                             margin: EdgeInsets.only(top: 10, bottom: 20),
-                            decoration: BoxDecoration(
-                                color: colorGreyBg,
-                                borderRadius: BorderRadius.circular(11)),
                             child: TextFormField(
                               obscureText: false,
-                              decoration: InputDecoration(
-                                enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        width: 0, color: Colors.transparent)),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      width: 0, color: Colors.transparent),
-                                ),
-                                contentPadding: EdgeInsets.symmetric(
-                                    vertical: 0, horizontal: 20),
-                              ),
                               onChanged: (String? valPw) {
                                 _formValues['password'] = valPw!;
                               },
@@ -114,36 +87,31 @@ class _LoginPageState extends State<LoginPage> {
                                   return;
                                 }
                                 final token = generateToken['token'];
-                                Provider.of<AccountsProvider>(context,listen: false).signIn(token);
+                                Provider.of<AccountsProvider>(context, listen: false)
+                                .signIn(token);
                                 var sharedPref = await SharedPreferences.getInstance();
                                 await sharedPref.setString('customer', token);
                                 // await getCart(context);
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => HomePage()),
+                                      builder: (context) => AccDashBoard()),
                                 );
                                 // Navigator.pop(context);
                               },
                               onError: (error) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(error.toString()),
-                      ),
-                    );
-                    print(error.toString());
-                  },
-                ),
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(error.toString()),
+                                  ),
+                                );
+                                print(error.toString());
+                              },
+                            ),
                             builder: (runMutation, result) {
                               return ElevatedButton(
                                 child: Text('Login'),
                                 onPressed: () {
-                                  // if (!_formKey.currentState!.validate()) {
-                                  //   _formKey.currentState!
-                                  //       .save();
-
-                                  
-                                  // }
                                   if(validateAndSave()){
                                     runMutation({
                                       'email': _formValues['email'],

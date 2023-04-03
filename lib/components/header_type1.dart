@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../pages/cartPage.dart';
 import '../theme.dart';
 
 class HeaderType1 extends StatelessWidget {
@@ -56,7 +57,14 @@ class HeaderType1 extends StatelessWidget {
             child: Stack(
               children: [
                 IconButton(
-                  onPressed: (){},
+                  onPressed: (){
+                    Navigator.push(
+                      context,
+                        MaterialPageRoute(builder: (context) => CartPage()
+                      ),
+                    );
+                    
+                  },
                   icon: Icon(
                     FontAwesomeIcons.shoppingBag
                   ),
