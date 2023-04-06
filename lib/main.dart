@@ -12,6 +12,7 @@ import 'pages/homepage.dart';
 import 'pages/login.dart';
 import 'pages/myaccount/acc_dashboard.dart';
 import 'pages/product.dart';
+import 'pages/start.dart';
 import 'providers/accounts.dart';
 import 'providers/cart.dart';
 
@@ -57,29 +58,31 @@ class MyApp extends StatelessWidget {
 
     return GraphQLProvider(
       client: qlClient,
-      child: MaterialApp(
-        theme: ThemeData(
-          primaryColor: colorTheme,
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: colorTheme,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(11)
-              ),
-              // minimumSize: Size.fromHeight(40),
+      child: CacheProvider(
+        child: MaterialApp(
+          theme: ThemeData(
+            primaryColor: colorTheme,
+            elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colorTheme,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(11)
+                ),
+                // minimumSize: Size.fromHeight(40),
+              )
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                minimumSize: Size.zero,
+                // foregroundColor: colorBlack
+              )
             )
           ),
-          textButtonTheme: TextButtonThemeData(
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              minimumSize: Size.zero,
-              // foregroundColor: colorBlack
-            )
-          )
+          debugShowCheckedModeBanner: false,
+          home: StartScreen(),
         ),
-        debugShowCheckedModeBanner: false,
-        home: HomePage(),
       ),
     );
   }

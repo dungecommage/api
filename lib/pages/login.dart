@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../components/header_type1.dart';
+import '../graphql/mutation.dart';
 import '../providers/accounts.dart';
 import '../theme.dart';
 import 'myaccount/acc_dashboard.dart';
@@ -19,17 +20,6 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final Map<String, String> _formValues = {};
-
-  final String createToken = '''
-    mutation CreateCustomerToken(\$email: String!, \$pass: String!) {
-      generateCustomerToken(
-        email: \$email
-        password: \$pass
-      ) {
-        token
-      }
-    }
-  ''';
 
   @override
   Widget build(BuildContext context) {

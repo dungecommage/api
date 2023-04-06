@@ -38,12 +38,28 @@ String customerCart= '''{
     id
     email
     items{
+      __typename
       id
       quantity
       product{
         id
         sku
         name
+        thumbnail{
+          url
+        }
+        price_range {
+          minimum_price {
+            regular_price {
+              value
+              currency
+            }
+            final_price {
+              value
+              currency
+            }
+          }
+        }
       }
       ... on ConfigurableCartItem{
         id
@@ -53,6 +69,16 @@ String customerCart= '''{
           value_label
           option_label
         }
+      }
+    }
+    prices {
+      subtotal_excluding_tax{
+        value
+        currency
+      }
+      grand_total {
+        value
+        currency
       }
     }
   }
