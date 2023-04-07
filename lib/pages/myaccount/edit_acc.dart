@@ -4,7 +4,9 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 import '../../components/header_type1.dart';
+import '../../graphql/mutation.dart';
 import '../../graphql/query.dart';
+import 'acc_dashboard.dart';
 
 class EditAccount extends StatelessWidget {
   EditAccount({super.key});
@@ -140,7 +142,46 @@ class EditAccount extends StatelessWidget {
                           ),
                         ),
                         
-                        
+                        Mutation(
+                            options: MutationOptions(
+                              document: gql(changeCustomerPassword),
+                              onCompleted: (data) async {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Save Info Succeeded!')),
+                                );
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => AccDashBoard()),
+                                );
+                              },
+                              onError: (error) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(error.toString()),
+                                  ),
+                                );
+                                print(error.toString());
+                              },
+                            ),
+                            builder: (runMutation, result) {
+                              return ElevatedButton(
+                                child: Text('Save'),
+                                style: ElevatedButton.styleFrom(
+                                  minimumSize: Size.fromHeight(40),
+                                ),
+                                onPressed: () {
+                                  if(_formValues['npassword'] == _formValues['cnpassword']){
+                                    runMutation({
+                                      'pass': _formValues['password'],
+                                      'npass': _formValues['npassword'],
+                                    });
+                                  }
+                                  
+                                },
+                              );
+                            },
+                          ),
                       ],
                     ),
                   ),

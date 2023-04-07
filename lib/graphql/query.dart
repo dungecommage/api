@@ -5,6 +5,7 @@ String customerInfo =
       lastname
       email
       addresses {
+        id
         firstname
         lastname
         street
@@ -16,6 +17,8 @@ String customerInfo =
         postcode
         country_code
         telephone
+        default_billing
+        default_shipping
       }
     }
   }''';

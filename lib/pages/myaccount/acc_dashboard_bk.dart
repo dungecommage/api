@@ -14,14 +14,9 @@ import 'edit_acc.dart';
 import 'manage_address.dart';
 import 'sidebar.dart';
 
-class AccDashBoard extends StatefulWidget {
-  const AccDashBoard({super.key});
+class AccDashBoard extends StatelessWidget {
+  AccDashBoard({Key? key});
 
-  @override
-  State<AccDashBoard> createState() => _AccDashBoardState();
-}
-
-class _AccDashBoardState extends State<AccDashBoard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -115,9 +110,9 @@ class _AccDashBoardState extends State<AccDashBoard> {
           SizedBox(height: 10,),
           Query(
             options: QueryOptions(
-              document: gql(customerInfo),
+              document: gql(customerInfo)
             ), 
-            builder: (QueryResult result, { VoidCallback? refetch, FetchMore? fetchMore }) {
+            builder: (result, {fetchMore, refetch}) {
               if (result.hasException) {
                 return Text(result.exception.toString());
               }
@@ -368,17 +363,15 @@ class _AccDashBoardState extends State<AccDashBoard> {
                           );
                           print(error.toString());
                         },
-                        // update: (cache, result) {
-                        //   cache.writeQuery(request, data: data)
-                        // },
                       ),
                       builder: (runMutation, result) {
                         return TextButton(
                           onPressed: () {
-                            runMutation({
-                              'id': item['id'],
-                            });
-                            
+                            // runMutation({
+                            //   'id': item['id'],
+                            // });
+                            cusAddress.removeAt(index);
+                            print(cusAddress);
                           }, 
                           child: Text('Delete')
                         );

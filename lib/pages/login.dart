@@ -95,12 +95,15 @@ class _LoginPageState extends State<LoginPage> {
                                     content: Text(error.toString()),
                                   ),
                                 );
-                                print(error.toString());
+                                // print(error.toString());
                               },
                             ),
                             builder: (runMutation, result) {
                               return ElevatedButton(
                                 child: Text('Login'),
+                                style: ElevatedButton.styleFrom(
+                                  minimumSize: Size.fromHeight(40),
+                                ),
                                 onPressed: () {
                                   if(validateAndSave()){
                                     runMutation({

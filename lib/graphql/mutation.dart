@@ -29,3 +29,37 @@ mutation ChangeCustomerPassword(\$pass: String!, \$npass: String!){
   }
 }
 ''';
+
+String createAcc = '''
+  mutation CreateCustomerMutation(
+    \$firstname: String!,
+    \$lastname: String!,
+    \$email: String!, 
+    \$pass: String!
+  ) {
+    createCustomer(
+      input: {
+        firstname: \$firstname
+        lastname: \$lastname
+        email: \$email
+        password: \$pass
+        is_subscribed: true
+      }
+    ){
+      customer{
+        firstname
+        lastname
+        email
+        is_subscribed
+      }
+    }
+  }
+''';
+
+String deleteCustomerAddress = '''
+  mutation DeleteAddress(\$id: Int!){
+    deleteCustomerAddress(
+      id: \$id
+    )
+  }
+''';

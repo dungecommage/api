@@ -2,9 +2,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../components/header_type1.dart';
+import '../graphql/mutation.dart';
+import '../providers/accounts.dart';
 import '../theme.dart';
+import 'myaccount/acc_dashboard.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -16,32 +21,6 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final Map<String, String> _formValues = {};
-
-  final String createAcc = '''
-    mutation CreateCustomerMutation(
-      \$firstname: String!,
-      \$lastname: String!,
-      \$email: String!, 
-      \$pass: String!
-    ) {
-      createCustomer(
-        input: {
-          firstname: \$firstname
-          lastname: \$lastname
-          email: \$email
-          password: \$pass
-          is_subscribed: true
-        }
-      ){
-        customer{
-          firstname
-          lastname
-          email
-          is_subscribed
-        }
-      }
-    }
-  ''';
 
   @override
   Widget build(BuildContext context) {
@@ -130,15 +109,21 @@ class _RegisterPageState extends State<RegisterPage> {
                         options: MutationOptions(
                           document: gql(createAcc),
                           onCompleted: (data) async {
-                            if (data == null) {
-                              return;
-                            }
-                            final createCustomer = data['createCustomer'];
-                            if (createCustomer == null) {
-                              return;
-                            }
-                            
-                            Navigator.pop(context);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Create Account Succeeded!')),
+                            );
+                            var token;
+                            final AccountsProvider authenticationState = Provider.of<AccountsProvider>(context);
+                            Provider.of<AccountsProvider>(context, listen: false)
+                            .signIn(token);
+                            var sharedPref = await SharedPreferences.getInstance();
+                            await sharedPref.setString('customer', token);
+                            // await getCart(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AccDashBoard()),
+                            );
                           },
                           onError: (error) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -151,22 +136,20 @@ class _RegisterPageState extends State<RegisterPage> {
                         builder: (runMutation, result) {
                           return ElevatedButton(
                             onPressed: () {
-                              runMutation({
-                                'firstname': _formValues['firstname'],
-                                'lastname': _formValues['lastname'],
-                                'email': _formValues['email'],
-                                'pass': _formValues['password'],
-                              });
-
                               if(_formValues['password'] == _formValues['confirmPassword']){
-                                print('Pw correct!');
+                                runMutation({
+                                  'firstname': _formValues['firstname'],
+                                  'lastname': _formValues['lastname'],
+                                  'email': _formValues['email'],
+                                  'pass': _formValues['password'],
+                                });
                               } else{
-                                print('Pw incorrect');
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text("Please enter Password & Confirm Password the same value again."),
+                                  ),
+                                );
                               }
-                              print(_formValues['firstname']);
-                              print(_formValues['lastname']);
-                              print(_formValues['email']);
-                              print(_formValues['password']);
                             },
                             child: Text('Create an Account'),
                             style: ElevatedButton.styleFrom(
