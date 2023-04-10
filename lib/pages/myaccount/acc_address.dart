@@ -12,7 +12,7 @@ class AccAddress extends StatelessWidget {
         child: Column(
           children: [
             HeaderType1(titlePage: "Address Book"),
-            Text('Order address')
+            Text('Add list')
           ],
         ),
       ),

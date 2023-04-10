@@ -63,3 +63,30 @@ String deleteCustomerAddress = '''
     )
   }
 ''';
+
+String updateCustomerAddress = '''
+  mutation UpdateAddress(
+    \$id: Int!,
+    \$street: [String]!,
+    \$city: String!,
+    \$postcode: String!,
+    \$default_billing: Boolean!,
+    \$default_shipping: Boolean!,
+  ){
+    updateCustomerAddress(
+      id: \$id
+      input: { 
+        street: \$street, 
+        city: \$city, 
+        postcode: \$postcode ,
+        default_billing: \$default_billing,
+        default_shipping: \$default_shipping
+      }
+    ) {
+      id
+      street
+      city
+      postcode
+    }
+  }
+''';

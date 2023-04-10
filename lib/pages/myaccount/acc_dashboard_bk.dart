@@ -10,8 +10,9 @@ import '../../providers/accounts.dart';
 import '../../theme.dart';
 import '../homepage.dart';
 import '../login.dart';
+import 'addnew_address.dart';
 import 'edit_acc.dart';
-import 'manage_address.dart';
+import 'edit_address.dart';
 import 'sidebar.dart';
 
 class AccDashBoard extends StatelessWidget {

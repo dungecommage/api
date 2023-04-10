@@ -10,8 +10,9 @@ import '../../providers/accounts.dart';
 import '../../theme.dart';
 import '../homepage.dart';
 import '../login.dart';
+import 'addnew_address.dart';
 import 'edit_acc.dart';
-import 'manage_address.dart';
+import 'edit_address.dart';
 import 'sidebar.dart';
 
 class AccDashBoard extends StatefulWidget {
@@ -110,12 +111,14 @@ class _AccDashBoardState extends State<AccDashBoard> {
               );
             },
           ),
-          SizedBox(height: 20,),
-          SidebarAccount(),
-          SizedBox(height: 10,),
+          // SizedBox(height: 20,),
+          // SidebarAccount(),
+          // SizedBox(height: 10,),
           Query(
             options: QueryOptions(
               document: gql(customerInfo),
+              fetchPolicy: FetchPolicy.noCache,
+              cacheRereadPolicy: CacheRereadPolicy.ignoreAll,
             ), 
             builder: (QueryResult result, { VoidCallback? refetch, FetchMore? fetchMore }) {
               if (result.hasException) {
@@ -130,67 +133,68 @@ class _AccDashBoardState extends State<AccDashBoard> {
 
               final cus = result.data!['customer'];
               List cusAddress = result.data!['customer']['addresses'];
+              
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    margin: EdgeInsets.symmetric(vertical: 15),
-                    child: Text(
-                      'Contact Information',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16
-                      ),
-                    )
-                  ),
-                  Container(
-                    width: context.w,
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: colorWhite,
-                      boxShadow: [
-                        BoxShadow(
-                          color: colorBlack.withOpacity(0.1),
-                          blurRadius: 10,
-                            offset: Offset(0,0),
-                        ),
-                      ],
-                      borderRadius: BorderRadius.circular(11)
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("${cus['firstname']} ${cus['lastname']}"),
-                        SizedBox(height: 5),
-                        Text("${cus['email']}"),
-                        SizedBox(height: 10),
-                        Wrap(
-                          spacing: 10,
-                          children: [
-                            TextButton(
-                              onPressed: () {}, 
-                              child: Text(
-                                'Edit',
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                    MaterialPageRoute(builder: (context) => EditAccount()
-                                  ),
-                                );
-                              }, 
-                              child: Text('Change Password')
-                            ),
-                          ],
-                        ),
-                      ],
-                    )
-                  ),
+                  // Container(
+                  //   margin: EdgeInsets.symmetric(vertical: 15),
+                  //   child: Text(
+                  //     'Contact Information',
+                  //     style: TextStyle(
+                  //       fontWeight: FontWeight.bold,
+                  //       fontSize: 16
+                  //     ),
+                  //   )
+                  // ),
+                  // Container(
+                  //   width: context.w,
+                  //   padding: EdgeInsets.all(10),
+                  //   decoration: BoxDecoration(
+                  //     color: colorWhite,
+                  //     boxShadow: [
+                  //       BoxShadow(
+                  //         color: colorBlack.withOpacity(0.1),
+                  //         blurRadius: 10,
+                  //           offset: Offset(0,0),
+                  //       ),
+                  //     ],
+                  //     borderRadius: BorderRadius.circular(11)
+                  //   ),
+                  //   child: Column(
+                  //     crossAxisAlignment: CrossAxisAlignment.start,
+                  //     children: [
+                  //       Text("${cus['firstname']} ${cus['lastname']}"),
+                  //       SizedBox(height: 5),
+                  //       Text("${cus['email']}"),
+                  //       SizedBox(height: 10),
+                  //       Wrap(
+                  //         spacing: 10,
+                  //         children: [
+                  //           TextButton(
+                  //             onPressed: () {}, 
+                  //             child: Text(
+                  //               'Edit',
+                  //             ),
+                  //           ),
+                  //           TextButton(
+                  //             onPressed: () {
+                  //               Navigator.push(
+                  //                 context,
+                  //                   MaterialPageRoute(builder: (context) => EditAccount()
+                  //                 ),
+                  //               );
+                  //             }, 
+                  //             child: Text('Change Password')
+                  //           ),
+                  //         ],
+                  //       ),
+                  //     ],
+                  //   )
+                  // ),
                   
-                  SizedBox(height: 20,),
+                  // SizedBox(height: 20,),
                   Container(
                     margin: EdgeInsets.symmetric(vertical: 15),
                     child: Row(
@@ -334,9 +338,6 @@ class _AccDashBoardState extends State<AccDashBoard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Text(
-              //   "${item['default_billing']}"
-              // ),
               Text(
                 "${item['firstname']} ${item['lastname']}, ${item['street']}, ${item['city']}, ${item['telephone']}"
               ),
@@ -345,7 +346,13 @@ class _AccDashBoardState extends State<AccDashBoard> {
                 spacing: 10,
                 children: [
                   TextButton(
-                    onPressed: () {}, 
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                          MaterialPageRoute(builder: (context) => EditAddress(idAddress: item['id'])
+                        ),
+                      );
+                    }, 
                     child: Text('Edit')
                   ),
                   Visibility(
@@ -366,7 +373,6 @@ class _AccDashBoardState extends State<AccDashBoard> {
                               content: Text(error.toString()),
                             ),
                           );
-                          print(error.toString());
                         },
                         // update: (cache, result) {
                         //   cache.writeQuery(request, data: data)
@@ -375,6 +381,10 @@ class _AccDashBoardState extends State<AccDashBoard> {
                       builder: (runMutation, result) {
                         return TextButton(
                           onPressed: () {
+                            setState(() {
+                              cusAddress.removeAt(index);
+                            });
+                            
                             runMutation({
                               'id': item['id'],
                             });
@@ -384,7 +394,7 @@ class _AccDashBoardState extends State<AccDashBoard> {
                         );
                       },
                     ),
-                  ),
+                  )
                 ],
               )
             ],
@@ -393,4 +403,5 @@ class _AccDashBoardState extends State<AccDashBoard> {
       }
     );
   }
+
 }
