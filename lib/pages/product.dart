@@ -37,7 +37,7 @@ class _ProductPageState extends State<ProductPage> {
   List<int> listRating_selected = [];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool hasRating = false;
-  int initVal = 1;  
+  int initVal = 1; 
 
   bool validateAndSave(){
     final form = _formKey.currentState;
@@ -499,29 +499,42 @@ class _ProductPageState extends State<ProductPage> {
               itemCount: option.length,
               itemBuilder: (context, i){
                 final valOption = option[i];
-                return InkWell(
-                  onTap: () {
-                    print(valOption['value_index']);
+                int valRadio = option[0]['value_index']; 
+                final valIndex = valOption['value_index'];
+                // return InkWell(
+                //   onTap: () {
+                //     print(valOption['value_index']);
+                //   },
+                //   child: Container(
+                //     margin: EdgeInsets.all(10),
+                //     decoration: BoxDecoration(
+                //     color: colorWhite,
+                //       boxShadow: [
+                //         BoxShadow(
+                //           color: colorBlack.withOpacity(0.1),
+                //           blurRadius: 10,
+                //             offset: Offset(0,0),
+                //         ),
+                //       ],
+                //     ),
+                //     child: Column(
+                //       children: [
+                //         Text('${valOption['value_index']}'),
+                //         Text('${valOption['label']}'),
+                //       ],
+                //     ),
+                //   ),
+                // );
+
+                return RadioListTile(
+                  value: index,
+                  groupValue: valRadio,
+                  onChanged: (ind) {
+                    setState(() {
+                      valRadio = ind!;
+                    });
                   },
-                  child: Container(
-                    margin: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                    color: colorWhite,
-                      boxShadow: [
-                        BoxShadow(
-                          color: colorBlack.withOpacity(0.1),
-                          blurRadius: 10,
-                            offset: Offset(0,0),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        Text('${valOption['value_index']}'),
-                        Text('${valOption['label']}'),
-                      ],
-                    ),
-                  ),
+                  title: Text("${valIndex}"),
                 );
               }
             )
