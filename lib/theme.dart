@@ -9,6 +9,7 @@ const colorGrey1 = Color(0xFF9B9B9B);
 const colorGrey2 = Color(0xFF909090);
 const colorGreyBorder = Color(0xFFF1F1F1);
 const colorGreyBg = Color(0xFFD9D9D9);
+const colorbgWarning = Color(0xFFfdf0d5);
 
 extension MediaQueryValues on BuildContext {
   double get w => MediaQuery.of(this).size.width;

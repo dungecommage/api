@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../theme.dart';
-import 'acc_address.dart';
+import 'manage_address.dart';
 import 'acc_dashboard.dart';
 
 class SidebarAccount extends StatelessWidget {
@@ -16,7 +16,7 @@ class SidebarAccount extends StatelessWidget {
         InkWell(
           onTap: () => Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AccAddress()),
+            MaterialPageRoute(builder: (context) => ManageAddress()),
           ),
           child: ListTile(
             visualDensity: VisualDensity(horizontal: 0, vertical: -4),

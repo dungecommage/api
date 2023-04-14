@@ -1,3 +1,11 @@
+import 'dart:io' show Platform;
+
+import 'package:flutter/material.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:provider/provider.dart';
+
+import 'providers/cart.dart';
+
 const Map<String, String> _currencies = {
   'USD': '\$',
   'EUR': '€',
@@ -16,4 +24,38 @@ const Map<String, String> _currencies = {
 String currencyWithPrice(dynamic priceWrap) {
   final currency = _currencies[priceWrap['currency']];
   return '${currency}${priceWrap['value'].toString()}';
+}
+
+/// Desktop Platform = 4 and Mobile Platform = 2
+int certainPlatformGridCount() {
+  var gridViewCount = 4;
+  if (Platform.isIOS || Platform.isAndroid || Platform.isFuchsia) {
+    gridViewCount = 2;
+  }
+  return gridViewCount;
+}
+
+Future<void> getCart(BuildContext context) async {
+  final client = GraphQLProvider.of(context).value;
+  var result = await client.mutate(
+    MutationOptions(document: gql('''
+    mutation {
+      createEmptyCart
+    }
+    ''')),
+  );
+
+  if (result.hasException) {
+    print(result.exception.toString());
+    return;
+  }
+
+  final cardId = result.data!['createEmptyCart'];
+  print(cardId);
+  context.read<CartProvider>().setId(cardId);
+}
+
+Color productCell(BuildContext context) {
+  final brightness = Theme.of(context).brightness;
+  return (brightness == Brightness.dark) ? Colors.grey : Colors.white;
 }

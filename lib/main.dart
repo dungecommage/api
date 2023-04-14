@@ -2,7 +2,6 @@
 
 import 'dart:io';
 
-import 'package:connect_api/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:provider/provider.dart';
@@ -12,9 +11,9 @@ import 'pages/homepage.dart';
 import 'pages/login.dart';
 import 'pages/myaccount/acc_dashboard.dart';
 import 'pages/product.dart';
-import 'pages/start.dart';
 import 'providers/accounts.dart';
 import 'providers/cart.dart';
+import 'theme.dart';
 
 void main() => runApp(
   MyHome()
@@ -78,10 +77,19 @@ class MyApp extends StatelessWidget {
                 minimumSize: Size.zero,
                 // foregroundColor: colorBlack
               )
+            ), 
+            outlinedButtonTheme: OutlinedButtonThemeData(
+              style: OutlinedButton.styleFrom(
+                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                minimumSize: Size.zero,
+                foregroundColor: colorBlack,
+              )
             )
           ),
           debugShowCheckedModeBanner: false,
-          home: StartScreen(),
+          // home: HomePage(),
+          home: ProductPage(sku: "24-WB04",),
         ),
       ),
     );

@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 
+import '../components/footer.dart';
 import '../components/header_type1.dart';
+import '../components/product_cate.dart';
 import '../providers/accounts.dart';
 import 'category.dart';
 import 'home/sub-cate.dart';
@@ -16,35 +18,49 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 20),
+      body: SafeArea(
         child: Column(
           children: [
-            SubCateHome(),
-            Row(
-              children: [
-                ElevatedButton(
-                  onPressed: () { 
-                    Navigator.push(
-                      context,
-                        MaterialPageRoute(builder: (context) => LoginPage()
+            HeaderType1(titlePage: "Homepage"),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      // SubCateHome(),
+                      ProductCategory(idCate: 23,),
+                      Row(
+                        children: [
+                          ElevatedButton(
+                            onPressed: () { 
+                              Navigator.push(
+                                context,
+                                  MaterialPageRoute(builder: (context) => LoginPage()
+                                ),
+                              );
+                            }, 
+                            child: Text('Login')
+                          ),
+                          OutlinedButton(
+                            onPressed: () { 
+                              Navigator.push(
+                                context,
+                                  MaterialPageRoute(builder: (context) => RegisterPage()
+                                ),
+                              );
+                            }, 
+                            child: Text('Create account')
+                          ),
+                        ],
                       ),
-                    );
-                  }, 
-                  child: Text('Login')
+                      ProductCategory(idCate: 4,),
+                    ],
+                  ),
                 ),
-                OutlinedButton(
-                  onPressed: () { 
-                    Navigator.push(
-                      context,
-                        MaterialPageRoute(builder: (context) => RegisterPage()
-                      ),
-                    );
-                  }, 
-                  child: Text('Create account')
-                ),
-              ],
-            )
+              ),
+            ),
+            Footer(),
           ],
         ),
       ),

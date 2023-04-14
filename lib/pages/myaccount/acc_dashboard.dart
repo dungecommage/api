@@ -13,6 +13,7 @@ import '../login.dart';
 import 'addnew_address.dart';
 import 'edit_acc.dart';
 import 'edit_address.dart';
+import 'manage_address.dart';
 import 'sidebar.dart';
 
 class AccDashBoard extends StatefulWidget {
@@ -38,6 +39,7 @@ class _AccDashBoardState extends State<AccDashBoard> {
   Widget accountsBody(BuildContext context) {  
     final AccountsProvider authenticationState = Provider.of<AccountsProvider>(context);
     if (authenticationState.token != null && authenticationState.token.isNotEmpty) {
+      print(authenticationState.token);
       return customer(context);
     } else {
       return guest(context);
@@ -87,11 +89,11 @@ class _AccDashBoardState extends State<AccDashBoard> {
                 var sharedPref = await SharedPreferences.getInstance();
                 await sharedPref.remove('customer');
                 // await getCart(context);
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => HomePage()),
-                  );
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (context) => HomePage()),
+                //   );
               }
             },
             onError: (error) {
@@ -133,6 +135,8 @@ class _AccDashBoardState extends State<AccDashBoard> {
 
               final cus = result.data!['customer'];
               List cusAddress = result.data!['customer']['addresses'];
+              var addBilling = (cusAddress.isEmpty)? null: cusAddress.firstWhere((x) => x['default_billing'] == true);
+              var addShipping = (cusAddress.isEmpty)? null : cusAddress.firstWhere((x) => x['default_shipping'] == true);
               
 
               return Column(
@@ -207,20 +211,20 @@ class _AccDashBoardState extends State<AccDashBoard> {
                             fontSize: 16
                           ),
                         ),
-                        OutlinedButton(
+                        TextButton(
                           onPressed: () {
                             Navigator.push(
                               context,
-                                MaterialPageRoute(builder: (context) => NewAddress()
+                                MaterialPageRoute(builder: (context) => ManageAddress()
                               ),
                             );
                           }, 
-                          child: Text('+ Add new')
+                          child: Text('Manage Address')
                         ),
                       ],
                     )
                   ),
-                  showAddress(context, cusAddress),
+                  showAddress(context, cusAddress, addBilling, addShipping),
                 ],
               );
             }
@@ -307,7 +311,7 @@ class _AccDashBoardState extends State<AccDashBoard> {
       );
   }
 
-  Widget showAddress(BuildContext context, dynamic cusAddress){
+  Widget showAddress(BuildContext context, dynamic cusAddress, dynamic addBilling, dynamic addShipping){
     if (cusAddress.isEmpty) {
       return Container(
         margin: EdgeInsets.only(bottom: 20),
@@ -315,13 +319,11 @@ class _AccDashBoardState extends State<AccDashBoard> {
       );
     } 
 
-    return ListView.builder(
+    return ListView(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
-      itemCount: cusAddress.length,
-      itemBuilder: (context, index){
-        final item = cusAddress[index];
-        return Container(
+      children: [
+        Container(
           padding: EdgeInsets.all(10),
           margin: EdgeInsets.only(bottom: 10),
           decoration: BoxDecoration(
@@ -339,68 +341,67 @@ class _AccDashBoardState extends State<AccDashBoard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "${item['firstname']} ${item['lastname']}, ${item['street']}, ${item['city']}, ${item['telephone']}"
+                "Default Billing Address",
+                style: PrimaryFont.bold(15),
               ),
-              SizedBox(height: 7,),
-              Wrap(
-                spacing: 10,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                          MaterialPageRoute(builder: (context) => EditAddress(idAddress: item['id'])
-                        ),
-                      );
-                    }, 
-                    child: Text('Edit')
-                  ),
-                  Visibility(
-                    visible: (item['default_billing'] == true || item['default_shipping'] == true)? false : true,
-                    child: Mutation(
-                      options: MutationOptions(
-                        document: gql(deleteCustomerAddress),
-                        onCompleted: (data) async {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: 
-                              Text('Remove address Successfully!')
-                            ),
-                          );
-                        },
-                        onError: (error) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(error.toString()),
-                            ),
-                          );
-                        },
-                        // update: (cache, result) {
-                        //   cache.writeQuery(request, data: data)
-                        // },
-                      ),
-                      builder: (runMutation, result) {
-                        return TextButton(
-                          onPressed: () {
-                            setState(() {
-                              cusAddress.removeAt(index);
-                            });
-                            
-                            runMutation({
-                              'id': item['id'],
-                            });
-                            
-                          }, 
-                          child: Text('Delete')
-                        );
-                      },
+              SizedBox(height: 5,),
+              Text(
+                "${addBilling['firstname']} ${addBilling['lastname']}, ${addBilling['street']}, ${addBilling['city']}, ${addBilling['telephone']}"
+              ),
+              SizedBox(height: 5,),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                      MaterialPageRoute(builder: (context) => EditAddress(idAddress: addBilling['id'])
                     ),
-                  )
-                ],
-              )
+                  );
+                }, 
+                child: Text('Edit')
+              ),
             ],
+          )
+        ),
+        Container(
+          padding: EdgeInsets.all(10),
+          margin: EdgeInsets.only(bottom: 10),
+          decoration: BoxDecoration(
+            color: colorWhite,
+            boxShadow: [
+              BoxShadow(
+                color: colorBlack.withOpacity(0.1),
+                blurRadius: 10,
+                  offset: Offset(0,0),
+              ),
+            ],
+            borderRadius: BorderRadius.circular(11)
           ),
-        );
-      }
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Default Shipping  Address",
+                style: PrimaryFont.bold(15),
+              ),
+              SizedBox(height: 5,),
+              Text(
+                "${addShipping['firstname']} ${addShipping['lastname']}, ${addShipping['street']}, ${addShipping['city']}, ${addShipping['telephone']}"
+              ),
+              SizedBox(height: 5,),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                      MaterialPageRoute(builder: (context) => EditAddress(idAddress: addShipping['id'])
+                    ),
+                  );
+                }, 
+                child: Text('Edit')
+              ),
+            ],
+          )
+        ),
+      ],
     );
   }
 

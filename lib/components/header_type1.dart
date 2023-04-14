@@ -69,28 +69,28 @@ class HeaderType1 extends StatelessWidget {
                     FontAwesomeIcons.shoppingBag
                   ),
                 ),
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: Container(
-                    width: 16,
-                    height: 16,
-                    decoration: BoxDecoration(
-                      color: colorBlack,
-                      borderRadius: BorderRadius.circular(8)
-                    ),
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        '0',
-                        style: TextStyle(
-                          color: colorWhite,
-                          fontSize: 11
-                        ),
-                      )
-                    ),
-                  ),
-                )
+                // Positioned(
+                //   top: 0,
+                //   right: 0,
+                //   child: Container(
+                //     width: 16,
+                //     height: 16,
+                //     decoration: BoxDecoration(
+                //       color: colorBlack,
+                //       borderRadius: BorderRadius.circular(8)
+                //     ),
+                //     child: Align(
+                //       alignment: Alignment.center,
+                //       child: Text(
+                //         '0',
+                //         style: TextStyle(
+                //           color: colorWhite,
+                //           fontSize: 11
+                //         ),
+                //       )
+                //     ),
+                //   ),
+                // )
               ],
             ),
           ),

@@ -90,3 +90,75 @@ String updateCustomerAddress = '''
     }
   }
 ''';
+
+String createCustomerAddress = '''
+  mutation CreateAddress(
+    \$firstname: String!,
+    \$lastname: String!,
+    \$telephone: String!,
+    \$street: [String]!,
+    \$city: String!,
+    \$postcode: String!,
+    \$default_billing: Boolean!,
+    \$default_shipping: Boolean!,
+    \$country_code: CountryCodeEnum!,
+  ){
+    createCustomerAddress(input: {
+      country_code: \$country_code
+      firstname: \$firstname
+      lastname: \$lastname
+      telephone: \$telephone
+      street: \$street
+      city: \$city
+      postcode: \$postcode
+      default_shipping: \$default_billing
+      default_billing: \$default_shipping
+    }) {
+      id
+      country_code
+      street
+      telephone
+      postcode
+      city
+      default_shipping
+      default_billing
+    }
+  }
+''';
+
+String createProductReview = '''
+  mutation  CreateAddress(
+    \$sku: String!,
+    \$nickname: String!,
+    \$summary: String!,
+    \$text: String!,
+    \$id: String!,
+    \$value_id: String!,
+  ){
+    createProductReview(
+      input: {
+        sku: \$sku,
+        nickname: \$nickname,
+        summary: \$summary,
+        text: \$text,
+        ratings: [
+          {
+            id: \$id,
+            value_id: \$value_id
+          }
+        ]
+      }
+  ) {
+      review {
+        nickname
+        summary
+        text
+        average_rating
+        ratings_breakdown {
+          name
+          value
+        }
+      }
+    }
+  }
+''';
