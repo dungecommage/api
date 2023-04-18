@@ -45,6 +45,7 @@ dependencies:
   flutter_swiper: ^1.1.6
   shared_preferences: ^2.0.18
   flutter_rating_bar: ^4.0.1
+  # cached_network_image: ^3.2.3
 
 dev_dependencies:
   flutter_test:

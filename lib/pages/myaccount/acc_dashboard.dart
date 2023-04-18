@@ -3,6 +3,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../components/footer.dart';
 import '../../components/header_type1.dart';
 import '../../graphql/mutation.dart';
 import '../../graphql/query.dart';
@@ -27,10 +28,20 @@ class _AccDashBoardState extends State<AccDashBoard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.only(left: 20.0, right: 20, top: 80),
-          child: accountsBody(context),
+      body: SafeArea(
+        child: Column(
+          children: [
+            HeaderType1(titlePage: "My Account",),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 20.0, right: 20, top: 80),
+                  child: accountsBody(context),
+                ),
+              ),
+            ),
+            Footer(),
+          ],
         ),
       ),
     );
@@ -39,7 +50,7 @@ class _AccDashBoardState extends State<AccDashBoard> {
   Widget accountsBody(BuildContext context) {  
     final AccountsProvider authenticationState = Provider.of<AccountsProvider>(context);
     if (authenticationState.token != null && authenticationState.token.isNotEmpty) {
-      print(authenticationState.token);
+      // print(authenticationState.token);
       return customer(context);
     } else {
       return guest(context);

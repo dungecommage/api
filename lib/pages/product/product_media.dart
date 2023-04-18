@@ -16,6 +16,7 @@ class ProductMedia extends StatefulWidget {
 
 class _ProductMediaState extends State<ProductMedia> {
   String? mainImage;
+  var placeholder = '';
 
   @override
   void initState() {
@@ -34,7 +35,13 @@ class _ProductMediaState extends State<ProductMedia> {
           height: context.h * 0.5,
           child: Align(
             alignment: Alignment.center,
-            child: Image.network('${mainImage}')
+            child: Image.network(
+              '${mainImage}',
+              errorBuilder:
+                  (BuildContext context, Object exception, StackTrace? stackTrace) {
+                return const Text('Image not found');
+              },
+            ),
           )
         ),
         Visibility(

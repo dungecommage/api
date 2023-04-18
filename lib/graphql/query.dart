@@ -51,17 +51,17 @@ String customerCart= '''{
         thumbnail{
           url
         }
-        price_range {
-          minimum_price {
-            regular_price {
-              value
-              currency
-            }
-            final_price {
-              value
-              currency
-            }
+        price_tiers {
+          final_price {
+            value
+            currency
           }
+        }
+      }
+      prices {
+        row_total {
+          value
+          currency
         }
       }
       ... on ConfigurableCartItem{

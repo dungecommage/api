@@ -88,8 +88,8 @@ class MyApp extends StatelessWidget {
             )
           ),
           debugShowCheckedModeBanner: false,
-          // home: HomePage(),
-          home: ProductPage(sku: "WJ12",),
+          home: HomePage(),
+          // home: ProductPage(sku: "NOIMG01",),
         ),
       ),
     );

@@ -29,7 +29,6 @@ class HomePage extends StatelessWidget {
                   child: Column(
                     children: [
                       // SubCateHome(),
-                      ProductCategory(idCate: 23,),
                       Row(
                         children: [
                           ElevatedButton(
@@ -55,6 +54,9 @@ class HomePage extends StatelessWidget {
                         ],
                       ),
                       ProductCategory(idCate: 4,),
+                      ProductCategory(idCate: 23,),
+                      
+                      
                     ],
                   ),
                 ),

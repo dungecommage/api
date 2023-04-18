@@ -38,6 +38,8 @@ class _ProductPageState extends State<ProductPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool hasRating = false;
   int initVal = 1; 
+  List attrSelected = [];
+  int _valRadio = 0;
 
   bool validateAndSave(){
     final form = _formKey.currentState;
@@ -148,6 +150,7 @@ class _ProductPageState extends State<ProductPage> {
                                       attributes {
                                         label
                                         code
+                                        value_index
                                       }
                                     }
                                   }
@@ -201,8 +204,14 @@ class _ProductPageState extends State<ProductPage> {
                             );
                 
                           }
+
+                          dynamic itemResult = result.data!['products']['items'];
+
+                          if(itemResult.isEmpty){
+                            return Text("Product not found");
+                          }
                       
-                          dynamic item = result.data!['products']['items'][0];
+                          dynamic item = itemResult[0];
                           final price = item['price_range']['minimum_price'];
                 
                           return Column(
@@ -215,7 +224,7 @@ class _ProductPageState extends State<ProductPage> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      // ProductMedia(item: item),
+                                      ProductMedia(item: item),
                                       productInfo(context, item),
                                       loadSpecificTypesOption(context, item),
                                       Container(
@@ -447,39 +456,6 @@ class _ProductPageState extends State<ProductPage> {
       return Container();
     }
 
-    // return Column(
-    //   children: configurableOptions.map<Widget>((configO) => 
-    //   Container(
-    //     child: Column(
-    //       crossAxisAlignment: CrossAxisAlignment.start,
-    //       children: [
-    //         Padding(
-    //           padding: EdgeInsets.only(bottom: 5),
-    //           child: Text(
-    //             '${configO['label']}',
-    //             style: TextStyle(
-    //               fontWeight: FontWeight.bold
-    //             ),
-    //           ),
-    //         ),
-    //         Wrap(
-    //           children: configO['values'].map<Widget>((valO){
-    //             return Container(
-    //               padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-    //               margin: EdgeInsets.only(right: 10, bottom: 10),
-    //               decoration: BoxDecoration(
-    //                 border: Border.all(color: colorGreyBorder),
-    //                 borderRadius: BorderRadius.circular(4)
-    //               ),
-    //               child: Text('${valO['label']}'),
-    //             );
-    //           }).toList(),
-    //         )
-    //       ],
-    //     ),
-    //   )).toList(),
-    // );
-
     return ListView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
@@ -488,56 +464,31 @@ class _ProductPageState extends State<ProductPage> {
         final item = configurableOptions[index];
         List option = item['values'];
         return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               "${item['label']}",
               style: PrimaryFont.bold(14),
             ),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: option.length,
-              itemBuilder: (context, i){
-                final valOption = option[i];
-                int valRadio = option[0]['value_index']; 
-                final valIndex = valOption['value_index'];
-                // return InkWell(
-                //   onTap: () {
-                //     print(valOption['value_index']);
-                //   },
-                //   child: Container(
-                //     margin: EdgeInsets.all(10),
-                //     decoration: BoxDecoration(
-                //     color: colorWhite,
-                //       boxShadow: [
-                //         BoxShadow(
-                //           color: colorBlack.withOpacity(0.1),
-                //           blurRadius: 10,
-                //             offset: Offset(0,0),
-                //         ),
-                //       ],
-                //     ),
-                //     child: Column(
-                //       children: [
-                //         Text('${valOption['value_index']}'),
-                //         Text('${valOption['label']}'),
-                //       ],
-                //     ),
-                //   ),
-                // );
-
-                return RadioListTile(
-                  value: index,
-                  groupValue: valRadio,
-                  onChanged: (ind) {
-                    setState(() {
-                      valRadio = ind!;
-                    });
-                  },
-                  title: Text("${valIndex}"),
-                );
-              }
-            )
+            SizedBox(height: 5,),
+            Wrap(
+            children: option.map<Widget>((valO){
+              return InkWell(
+                onTap: () {
+                  print(valO['value_index'],);
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                  margin: EdgeInsets.only(right: 10, bottom: 10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: colorGreyBorder),
+                    borderRadius: BorderRadius.circular(4)
+                  ),
+                  child: Text('${valO['label']}'),
+                ),
+              );
+            }).toList(),
+          )
           ],
         );
       }
@@ -585,11 +536,24 @@ class _ProductPageState extends State<ProductPage> {
                 'qty': qty,
                 'sku': widget.sku
               });
+            }  else if(types == 'ConfigurableProduct'){
+              var variantSku = getVariantSku(item);
+              print(variantSku);
             }
           }
         );
       },
     );
+  }
+
+  String getVariantSku(dynamic data) {
+    var variantSku = '';
+    var variants = data['variants'] as List;
+    for (var variant in variants) {
+      var attributes = variant['attributes'] as List;
+      print(attributes);
+    }
+    return variantSku;
   }
 
   Widget productInfo(BuildContext context, dynamic item){
