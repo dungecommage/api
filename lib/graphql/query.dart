@@ -86,3 +86,39 @@ String customerCart= '''{
     }
   }
 }''';
+
+String wishlist = '''{
+  customer{
+    wishlist {
+      id
+      items {
+        id   
+        product{
+          name
+          sku
+          image{
+            url
+          }
+          price_range{
+            minimum_price{
+              regular_price{
+                value
+                currency
+              }
+              final_price{
+                value
+                currency
+              }
+              discount {
+                amount_off
+                percent_off
+              }
+            }
+          }
+        }
+      }
+      items_count
+    }
+  }
+  
+}''';

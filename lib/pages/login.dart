@@ -82,11 +82,7 @@ class _LoginPageState extends State<LoginPage> {
                                 var sharedPref = await SharedPreferences.getInstance();
                                 await sharedPref.setString('customer', token);
                                 // await getCart(context);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => AccDashBoard()),
-                                );
+                                Navigator.of(context).pop();
                                 // Navigator.pop(context);
                               },
                               onError: (error) {

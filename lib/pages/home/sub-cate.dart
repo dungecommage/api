@@ -58,7 +58,13 @@ class SubCateHome extends StatelessWidget {
                   Container(
                     height: 40,
                     margin: EdgeInsets.only(bottom: 10),
-                    child: Image.network(item['image'])
+                    child: Image.network(
+                      item['image'],
+                      errorBuilder:
+                          (BuildContext context, Object exception, StackTrace? stackTrace) {
+                        return const Text('Image not found');
+                      },
+                    )
                   ),
                   Text(
                     "${item['name']}",

@@ -1,11 +1,13 @@
 import 'package:connect_api/components/product_list.dart';
 import 'package:connect_api/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 
 import '../components/footer.dart';
 import '../components/header_type1.dart';
@@ -14,6 +16,7 @@ import '../components/page_subtitle.dart';
 import '../components/product_item.dart';
 import '../components/validate.dart';
 import '../graphql/mutation.dart';
+import '../graphql/query.dart';
 import '../product_utils.dart';
 import '../providers/cart.dart';
 import '../utils.dart';
@@ -35,11 +38,12 @@ class ProductPage extends StatefulWidget {
 class _ProductPageState extends State<ProductPage> {
   final Map<String, String> _formValues = {};
   List<int> listRating_selected = [];
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormBuilderState>();
   bool hasRating = false;
   int initVal = 1; 
   List attrSelected = [];
   int _valRadio = 0;
+  bool onWishlist = false;
 
   bool validateAndSave(){
     final form = _formKey.currentState;
@@ -219,12 +223,12 @@ class _ProductPageState extends State<ProductPage> {
                             children: [
                               Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 20),
-                                child: Form(
+                                child: FormBuilder(
                                   key: _formKey,
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      ProductMedia(item: item),
+                                      // ProductMedia(item: item),
                                       productInfo(context, item),
                                       loadSpecificTypesOption(context, item),
                                       Container(
@@ -456,42 +460,44 @@ class _ProductPageState extends State<ProductPage> {
       return Container();
     }
 
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      itemCount: configurableOptions.length,
-      itemBuilder: (context, index){
-        final item = configurableOptions[index];
-        List option = item['values'];
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "${item['label']}",
-              style: PrimaryFont.bold(14),
-            ),
-            SizedBox(height: 5,),
-            Wrap(
-            children: option.map<Widget>((valO){
-              return InkWell(
-                onTap: () {
-                  print(valO['value_index'],);
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                  margin: EdgeInsets.only(right: 10, bottom: 10),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: colorGreyBorder),
-                    borderRadius: BorderRadius.circular(4)
-                  ),
-                  child: Text('${valO['label']}'),
-                ),
-              );
-            }).toList(),
-          )
-          ],
-        );
-      }
+    var widgetList = <Widget>[];
+    for (var option in configurableOptions) {
+      // widgetList.add(
+      //   FormBuilderDropdown(
+      //     name: option['label'].toLowerCase(),
+      //     decoration: InputDecoration(
+      //       labelText: option['label'],
+      //     ),
+      //     items: option['values']
+      //         .map<DropdownMenuItem>((e) => DropdownMenuItem(
+      //               value: e['label'],
+      //               child: Text(e['label']),
+      //             ))
+      //         .toList(),
+      //     // hint: Text('Select'),
+      //     validator: FormBuilderValidators.compose([FormBuilderValidators.required()]),
+      //     onChanged: (val) {
+      //       print(_formKey.currentState?.value.entries.toList());
+      //     },
+      //   ),
+      // );
+      widgetList.add(
+        FormBuilderRadioGroup(
+          name: option['label'].toLowerCase(),
+          validator: FormBuilderValidators.compose(
+                        [FormBuilderValidators.required()]),
+          options: (option['values'] as List)
+              .map((e) => FormBuilderFieldOption(
+                    value: e['value_index'],
+                    child: Text(e['label']),
+                  ))
+              .toList(),
+        ),
+      );
+    }
+
+    return Column(
+      children: widgetList,
     );
   }
 
@@ -548,11 +554,45 @@ class _ProductPageState extends State<ProductPage> {
 
   String getVariantSku(dynamic data) {
     var variantSku = '';
+    List valSelected = [50,167];
     var variants = data['variants'] as List;
-    for (var variant in variants) {
-      var attributes = variant['attributes'] as List;
-      print(attributes);
-    }
+    // for (var variant in variants) {
+    //   var attributes = variant['attributes'] as List;
+    //   var zero = attributes
+    //     .firstWhere((element) => element['value_index'] == valSelected[0]);
+    //     var first = attributes
+    //     .firstWhere((element) => element['value_index'] == valSelected[1]);
+    //     if (zero['value_index'] == valSelected[0] &&
+    //     first['value_index'] == valSelected[1]) {
+    //       variantSku = variant['product']['sku'];
+    //       break;
+    //     }
+    //   print(variantSku);
+    // }
+    // final formValues = _formKey.currentState!.value.entries.toList();
+    // print(formValues);
+    // var variants = data['variants'] as List;
+    // for (var variant in variants) {
+    //   var attributes = variant['attributes'] as List;
+    //   var zero = attributes
+    //       .firstWhere((element) => element['code'] == formValues[0].key);
+    //   var first = attributes
+    //       .firstWhere((element) => element['code'] == formValues[1].key);
+    //   if (formValues.length > 3) {
+    //     var second = attributes
+    //         .firstWhere((element) => element['code'] == formValues[3].key);
+    //     if (zero['label'] == formValues[0].value &&
+    //         first['label'] == formValues[1].value &&
+    //         second['label'] == formValues[2].value) {
+    //       variantSku = variant['product']['sku'];
+    //       break;
+    //     }
+    //   } else if (zero['label'] == formValues[0].value &&
+    //       first['label'] == formValues[1].value) {
+    //     variantSku = variant['product']['sku'];
+    //     break;
+    //   }
+    // }
     return variantSku;
   }
 
@@ -565,11 +605,17 @@ class _ProductPageState extends State<ProductPage> {
         Container(
           width: context.w,
           margin: EdgeInsets.only(top: 10, bottom: 5),
-          child: Text(
-            '${item['name']}',
-            style: TextStyle(
-              fontSize: 20
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '${item['name']}',
+                style: TextStyle(
+                  fontSize: 20
+                ),
+              ),
+              checkWishlist(context),
+            ],
           )
         ),
         Wrap(
@@ -682,11 +728,48 @@ class _ProductPageState extends State<ProductPage> {
     );
   }
 
+  Widget checkWishlist(BuildContext context){
+    return Mutation(
+      options: MutationOptions(
+        document: gql(createProductReview),
+        onCompleted: (data) async {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Product added to your wishlist"),
+            ),
+          );
+        },
+        onError: (error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(error.toString()),
+            ),
+          );
+          print(error.toString());
+        },
+      ),
+      builder: (runMutation, result) {
+        return IconButton(
+          onPressed: () {
+            setState(() {
+              onWishlist = !onWishlist;
+            });
+          },
+          icon: Icon(
+            (onWishlist == true)?
+            FontAwesomeIcons.solidHeart :
+            FontAwesomeIcons.heart
+          )
+        );
+      },
+    );
+  }
+
   Widget formReview(BuildContext context){
     double valRating = 0;
     bool showForm = false;
     return Form(
-      key: _formKey,
+      // key: _formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

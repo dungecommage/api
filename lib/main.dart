@@ -11,6 +11,7 @@ import 'pages/homepage.dart';
 import 'pages/login.dart';
 import 'pages/myaccount/acc_dashboard.dart';
 import 'pages/product.dart';
+import 'pages/test.dart';
 import 'providers/accounts.dart';
 import 'providers/cart.dart';
 import 'theme.dart';
@@ -89,7 +90,8 @@ class MyApp extends StatelessWidget {
           ),
           debugShowCheckedModeBanner: false,
           home: HomePage(),
-          // home: ProductPage(sku: "NOIMG01",),
+          // home: ProductPage(sku: "WJ12",),
+          // home: TestModule(),
         ),
       ),
     );

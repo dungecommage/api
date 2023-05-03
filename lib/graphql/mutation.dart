@@ -162,3 +162,17 @@ String createProductReview = '''
     }
   }
 ''';
+
+String addProductsToWishlist = '''
+mutation AddProductsToWishlist(
+  \$id: ID!,
+  \$items: [WishlistItemInput!]!,
+  ){
+  addProductsToWishlist(
+    wishlistId: \$id,
+    wishlistItems: \$items
+  ){
+  AddProductsToWishlistOutput
+  }
+}
+''';

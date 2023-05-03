@@ -59,7 +59,7 @@ class _CheckoutState extends State<Checkout> {
                 ),
               )
             ),
-            summaryCheckout(context),
+            ctaCheckout(context),
             Footer(),
           ],
         ),
@@ -67,116 +67,19 @@ class _CheckoutState extends State<Checkout> {
     );
   }
 
-  Widget summaryCheckout(BuildContext){
-    return Query(
-      options: QueryOptions(
-        document: gql(customerCart)
-      ), 
-      builder: (result, {fetchMore, refetch}) {
-        if (result.hasException) {
-          return Text(result.exception.toString());
-        }
-    
-        if (result.isLoading) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-
-        dynamic sumCart = result.data!['customerCart'];
-        if(sumCart != null){
-          dynamic cartId = sumCart['id'];
-          return Query(
-            options: QueryOptions(document: gql('''
-            {
-              cart(cart_id: "${cartId}") {
-                shipping_addresses{
-                  selected_shipping_method {
-                    amount {
-                      value
-                      currency
-                    }
-                    carrier_title
-                  }
-                }
-                prices {
-                  subtotal_excluding_tax{
-                    value
-                    currency
-                  }
-                  grand_total {
-                    value
-                    currency
-                  }
-                  discounts{
-                    amount{
-                      value
-                      currency
-                    }
-                    label
-                  }
-                }
-              }
-            }
-            ''')),
-            builder: (result, {fetchMore, refetch}) {
-              if (result.hasException) {
-                return Text(result.exception.toString());
-              }
-
-              if (result.isLoading) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-
-              dynamic prices = result.data!['cart']['prices'];
-              List discounts = prices['discounts'];
-              List isShipping = result.data!['cart']['shipping_addresses'];
-
-              return Container(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  decoration: BoxDecoration(
-                    color: colorWhite,
-                    boxShadow: [
-                      BoxShadow(
-                        color: colorBlack.withOpacity(0.1),
-                        blurRadius: 10,
-                          offset: Offset(0,0),
-                      ),
-                    ],
-                    borderRadius: BorderRadius.circular(11)
-                  ),
-                child: Row(
-                  children: [
-                    Flexible(
-                      flex: 6,
-                      fit: FlexFit.tight,
-                      child: summaryOrder(context, prices, discounts, isShipping),
-                    ),
-                    Flexible(
-                      flex: 4,
-                      fit: FlexFit.tight,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                              MaterialPageRoute(builder: (context) => Checkout()
-                            ),
-                          );
-                        },
-                        child: Text("Checkout"),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }
-          );
-        }
-
-        return Container();
-      }
+  Widget ctaCheckout(BuildContext context){
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(color: colorGreyBorder))
+      ),
+      child: ElevatedButton(
+        onPressed: () {}, 
+        child: Text('Checkout'),
+        style: ElevatedButton.styleFrom(
+          minimumSize: Size.fromHeight(40)
+        ),
+      ),
     );
   }
 
@@ -294,6 +197,7 @@ class _CheckoutState extends State<Checkout> {
 
         dynamic cart = result.data!['cart'];
         List avShipping = cart['shipping_addresses'][0]['available_shipping_methods'];
+        dynamic addShipping = cart['shipping_addresses'][0];
         List avPayment = cart['available_payment_methods'];
 
         return Container(
@@ -302,12 +206,25 @@ class _CheckoutState extends State<Checkout> {
               Text(
                 'Email: ${cart['email']}',
               ),
+              shippingAddress(context, addShipping),
               shippingMethod(context, avShipping),
               paymentMethod(context, avPayment)
             ],
           ),
         );
       }
+    );
+  }
+
+  Widget shippingAddress(BuildContext context, dynamic addShipping){
+    print(addShipping);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: Column(
+        children: [
+          Text('${addShipping['firstname']}' '${addShipping['lastname']}')
+        ],
+      ),
     );
   }
 

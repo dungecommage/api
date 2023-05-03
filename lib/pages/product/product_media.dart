@@ -67,7 +67,13 @@ class _ProductMediaState extends State<ProductMedia> {
                     width: 80,
                     height: 80,
                     child: FittedBox(
-                      child: Image.network(media['url'])
+                      child: Image.network(
+                        media['url'],
+                        errorBuilder:
+                          (BuildContext context, Object exception, StackTrace? stackTrace) {
+                        return const Text('Image not found');
+                      },
+                      )
                     ),
                   ),
                  )).toList()

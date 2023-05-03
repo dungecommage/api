@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-const colorTheme = Color(0xFFf54282);
+const colorTheme = Color(0xFFEE2E24);
 const colorSecond = Color(0xFF2f6fdb);
 const colorYellow = Color(0xFFfcc318);
 const colorWhite = Color(0xFFFFFFFF);
 const colorBlack = Color(0xFF000000);
 const colorGrey1 = Color(0xFF9B9B9B);
 const colorGrey2 = Color(0xFF909090);
-const colorGreyBorder = Color(0xFFF1F1F1);
+const colorGreyBorder = Color(0xFFD4D4D4);
 const colorGreyBg = Color(0xFFD9D9D9);
 const colorbgWarning = Color(0xFFfdf0d5);
 

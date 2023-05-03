@@ -39,7 +39,13 @@ Widget productBox(
             height: context.w * 0.5 - 30,
             // margin: EdgeInsets.only(bottom: 10),
             child: FittedBox(
-              child: Image.network(item['image']['url'])
+              child: Image.network(
+                item['image']['url'],
+                errorBuilder:
+                  (BuildContext context, Object exception, StackTrace? stackTrace) {
+                return const Text('Image not found');
+              },
+              )
             )
           ),
         ),
@@ -132,7 +138,13 @@ Widget productTypeList(
             // margin: EdgeInsets.only(bottom: 10),
             padding: EdgeInsets.only(right: 10),
             child: FittedBox(
-              child: Image.network(item['image']['url'])
+              child: Image.network(
+                item['image']['url'],
+                errorBuilder:
+                  (BuildContext context, Object exception, StackTrace? stackTrace) {
+                return const Text('Image not found');
+              },
+              )
             )
           ),
         ),

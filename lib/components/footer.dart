@@ -7,6 +7,7 @@ import '../pages/cartPage.dart';
 import '../pages/category.dart';
 import '../pages/homepage.dart';
 import '../pages/myaccount/acc_dashboard.dart';
+import '../pages/myaccount/acc_wishlist.dart';
 import '../theme.dart';
 
 class Footer extends StatelessWidget {
@@ -77,19 +78,19 @@ class Footer extends StatelessWidget {
             fit: FlexFit.tight,
             child: InkWell(
               onTap: (){
-                // Navigator.push(
-                //   context,
-                //     MaterialPageRoute(builder: (context) => HomePage()
-                //   ),
-                // );
+                Navigator.push(
+                  context,
+                    MaterialPageRoute(builder: (context) => AccountWishlist()
+                  ),
+                );
               },
               child: Column(
                 children: [
                   Icon(
-                    FontAwesomeIcons.mapMarker,
+                    FontAwesomeIcons.heart,
                     size: 18,
                   ),
-                  Text("Stores")
+                  Text("Wishlist")
                 ],
               ),
             )
